@@ -61,7 +61,11 @@ Use UUID primary keys, foreign keys, created/updated timestamps, constrained sta
 - SECURITY DEFINER helpers, if needed, must live in a non-exposed schema, pin an empty/controlled search_path, validate `auth.uid()`, and have explicit EXECUTE grants.
 - Storage downloads must use private bucket policies tied to the same project/customer mapping; never expose public object URLs for private project documents.
 
-## 5. Implemented application layer\n\nThe repository now includes an Admin project list/create page, project detail management for status/progress, stages, tasks, team assignment, updates, and private-file upload; a customer/staff dashboard; customer account linking on the CRM customer detail page; and a customer project detail page with visible milestones, tasks, updates, and signed document links. These pages depend on the live project schema and use Supabase RLS for access control. Their end-to-end behavior still requires authenticated admin, staff, and customer test accounts.\n\n## 6. Migration draft status
+## 5. Implemented application layer
+
+The repository now includes an Admin project list/create page, project detail management for status/progress, stages, tasks, team assignment, updates, and private-file upload; a customer/staff dashboard; customer account linking on the CRM customer detail page; and a customer project detail page with visible milestones, tasks, updates, and signed document links. These pages depend on the live project schema and use Supabase RLS for access control. Their end-to-end behavior still requires authenticated admin, staff, and customer test accounts.
+
+## 6. Migration draft status
 
 Repository migration drafts: `supabase/migrations/20261117163107_create_project_management_foundation.sql` (project/customer-link tables, indexes, private authorization helpers, grants, and RLS policies) and `supabase/migrations/20261117163111_private_project_file_storage.sql` (private bucket and Storage object policies). The live Supabase database was queried after the commit and still has none of these seven tables; the migration has **not** been applied. This is deliberate because the repository still lacks six historical migration files from the live migration ledger. Review the draft and reconcile migration history before applying it.
 

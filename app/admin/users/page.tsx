@@ -61,7 +61,7 @@ export default async function AdminUsersPage({
                   <tr key={item.id}>
                     <td>{item.full_name || "بدون اسم"}{item.id === user.id && <small className="admin-cell-sub">حسابك الحالي</small>}</td>
                     <td><span className="admin-role">{roleLabels[item.role] || item.role}</span></td>
-                    <td><span className={item.status === "active" ? "admin-status active" : "admin-status suspended"}>{statusLabels[item.status] || item.status}</span></td>
+                    <td><span className={`admin-status ${item.status === "active" ? "active" : item.status === "pending" ? "pending" : "suspended"}`}>{statusLabels[item.status] || item.status}</span></td>
                     <td>{new Intl.DateTimeFormat("ar-EG", { dateStyle: "medium" }).format(new Date(item.created_at))}</td>
                     <td>
                       {item.role === "admin" ? (

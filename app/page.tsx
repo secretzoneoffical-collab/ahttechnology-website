@@ -24,8 +24,8 @@ export default function HomePage() {
             <Link href="/services"><span data-locale="en">Services</span><span data-locale="ar">الخدمات</span></Link>
             <Link href="/about"><span data-locale="en">About</span><span data-locale="ar">عن AHT</span></Link>
             <Link href="/contact"><span data-locale="en">Contact</span><span data-locale="ar">تواصل معنا</span></Link>
-            <LanguageSwitcher />
           </nav>
+          <LanguageSwitcher />
           <div className="hero-actions" style={{ marginTop: 0 }}><Link className="button-secondary" href="/login"><span data-locale="en">Client Portal</span><span data-locale="ar">بوابة العملاء</span></Link><Link className="nav-cta" href="/contact"><span data-locale="en">Let’s Talk</span><span data-locale="ar">تواصل معنا</span> <span aria-hidden="true">↗</span></Link></div>
         </div>
       </header>

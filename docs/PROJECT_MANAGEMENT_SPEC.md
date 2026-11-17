@@ -7,12 +7,21 @@
 
 ## 1. Current verified baseline
 
-The live public schema currently contains only:
+The original core application tables are:
 - `profiles`: Auth-linked user profile and application role (`admin`, `staff`, `customer`).
-- `customers`: CRM customer/company record; it has no Auth user mapping.
+- `customers`: CRM customer/company record.
 - `service_requests`: Website inquiries, optionally linked to a CRM customer.
 
-All three core tables have RLS enabled. The project implementation now adds `customer_users`, `projects`, `project_team`, `project_stages`, `project_tasks`, `project_updates`, and `project_files`, all with RLS enabled. The live `auth.users` table had zero users at the time of the initial audit; no production test users have been created.
+The live project now also contains seven Project Management tables, all with RLS enabled:
+- `customer_users`
+- `projects`
+- `project_team`
+- `project_stages`
+- `project_tasks`
+- `project_updates`
+- `project_files`
+
+The private `aht-project-files` Storage bucket is installed. No production Auth users or project records were created during this implementation; identity-based end-to-end testing remains pending.
 
 ## 2. Product behavior
 
@@ -63,21 +72,30 @@ Use UUID primary keys, foreign keys, created/updated timestamps, constrained sta
 
 ## 5. Implemented application layer
 
-The repository now includes an Admin project list/create page, project detail management for status/progress, stages, tasks, team assignment, updates, and private-file upload; a customer/staff dashboard; customer account linking on the CRM customer detail page; and a customer project detail page with visible milestones, tasks, updates, and signed document links. These pages depend on the live project schema and use Supabase RLS for access control. Their end-to-end behavior still requires authenticated admin, staff, and customer test accounts.
+The repository now includes an Admin project list/create/edit experience, customer account linking on CRM profiles, staff assignment and task assignment, status/progress controls, editable stages/tasks, per-record customer visibility, project updates, and private-file upload/download. The Staff workspace shows assigned projects, lets staff update their assigned tasks, and accepts internal-only notes. The Customer portal shows only customer-visible project information and uses short-lived signed document links. The pages are implemented and the project schema is live; end-to-end identity-based authorization tests still need dedicated test accounts. These pages depend on the live project schema and use Supabase RLS for access control. Their end-to-end behavior still requires authenticated admin, staff, and customer test accounts.
 
-## 6. Migration draft status
+## 6. Live migration status
 
-Repository migration drafts: `supabase/migrations/20261117163107_create_project_management_foundation.sql` (project/customer-link tables, indexes, private authorization helpers, grants, and RLS policies) and `supabase/migrations/20261117163111_private_project_file_storage.sql` (private bucket and Storage object policies). The live Supabase database was queried after the commit and still has none of these seven tables; the migration has **not** been applied. This is deliberate because the repository still lacks six historical migration files from the live migration ledger. Review the draft and reconcile migration history before applying it.
+The following five project migrations are applied to the live Supabase project and tracked in GitHub at their exact live versions:
 
-## 7. Implementation sequence
+- `20261117163107_create_project_management_foundation.sql` — seven project/customer-link tables, indexes, authorization helpers, RLS policies, and task-integrity triggers.
+- `20261117163111_private_project_file_storage.sql` — private `aht-project-files` bucket and Storage object policies.
+- `20261117163133_project_portal_policy_performance.sql` — policy consolidation and foreign-key indexes.
+- `20261117163157_admin_only_project_storage_uploads.sql` — restrict Storage writes/deletes to Admin.
+- `20261117164416_validate_project_memberships.sql` — active customer/staff membership validation and task-assignee integrity.
 
-1. **Data model and access design** — this document.
-2. **Database migration** — add the tables, constraints, indexes, RLS policies, and private Storage bucket/policies in a reviewed migration.
-3. **Admin project management** — project list/detail/create/edit, customer link, staff assignment, stages, tasks, updates, files.
-4. **Customer portal** — project list/detail and customer-visible timeline/tasks/files.
-5. **Staff workspace** — assigned project and task views.
-6. **Isolation tests** — two customers must never read each other's project data; unassigned staff and inactive accounts must be denied; verify Storage separately.
-7. **CI and fresh-database migration test** — do not claim deployability until migrations reproduce the schema on a clean environment.
+The first six legacy migration SQL files remain absent from the repository. Do not invent their contents or replay them against the live database. See `docs/LEGACY_MIGRATION_RECOVERY.md`.
+
+## 7. Implementation status
+
+1. **Data model and access design** — completed.
+2. **Project schema, RLS, private Storage, and policy hardening** — applied to live Supabase.
+3. **Admin project management** — implemented in GitHub.
+4. **Customer account linking and portal** — implemented in GitHub.
+5. **Staff workspace** — implemented in GitHub.
+6. **Security advisor and privilege checks** — verified; Security Advisor returned zero findings.
+7. **Cross-customer runtime tests** — pending controlled Admin, Staff, Customer A, and Customer B identities.
+8. **Legacy migration recovery and clean-install replay** — pending.
 
 ## 8. Safety and rollout constraints
 

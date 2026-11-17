@@ -24,6 +24,11 @@ export default async function AdminDashboardPage() {
     .select("id", { count: "exact", head: true })
     .eq("status", "new");
 
+  const { count: staffUsers } = await supabase
+    .from("profiles")
+    .select("id", { count: "exact", head: true })
+    .eq("role", "staff");
+
   const { count: customers } = await supabase
     .from("customers")
     .select("id", { count: "exact", head: true });
@@ -50,6 +55,7 @@ export default async function AdminDashboardPage() {
         <article className="admin-stat"><span>حسابات الإدارة</span><strong>{adminUsers ?? 0}</strong></article>
         <article className="admin-stat"><span>طلبات الخدمات</span><strong>{serviceRequests ?? 0}</strong><small>{newRequests ?? 0} طلب جديد</small></article>
         <article className="admin-stat"><span>سجل العملاء</span><strong>{customers ?? 0}</strong></article>
+        <article className="admin-stat"><span>فريق العمل</span><strong>{staffUsers ?? 0}</strong></article>
       </section>
 
       <section className="admin-panel">
@@ -57,7 +63,8 @@ export default async function AdminDashboardPage() {
           <div><h2>إدارة النظام</h2><p>الأقسام المتاحة حاليًا في لوحة الإدارة.</p></div>
         </div>
         <div className="admin-shortcuts">
-          <Link href="/admin/users"><strong>المستخدمون</strong><span>عرض حسابات العملاء والموظفين وأدوارهم.</span></Link>
+          <Link href="/admin/users"><strong>المستخدمون والصلاحيات</strong><span>تعيين دور الموظف وإيقاف الحسابات أو تفعيلها.</span></Link>
+          <Link href="/admin/team"><strong>فريق العمل</strong><span>عرض حسابات الموظفين النشطة والموقوفة.</span></Link>
           <Link href="/admin/requests"><strong>طلبات الخدمات</strong><span>عرض الطلبات الواردة ومعلومات التواصل وتفاصيل الاحتياج.</span></Link>
           <Link href="/admin/customers"><strong>إدارة العملاء</strong><span>ملفات العملاء وتصنيفهم وملاحظاتهم وسجل طلباتهم.</span></Link>
           <div><strong>إعدادات الموقع</strong><span>قيد التطوير — إعدادات المحتوى واللغات.</span></div>

@@ -47,12 +47,18 @@ export async function createProjectTask(formData: FormData) {
   const description = String(formData.get("description") ?? "").trim().slice(0, 3000);
   const dueDate = String(formData.get("due_date") ?? "").trim() || null;
   const customerVisible = formData.get("customer_visible") === "on";
+  const assignedTo = String(formData.get("assigned_to") ?? "").trim() || null;
+  if (assignedTo) {
+    const { data: assignment } = await supabase.from("project_team").select("user_id, profiles!inner(role,status)").eq("project_id", projectId).eq("user_id", assignedTo).eq("profiles.role", "staff").eq("profiles.status", "active").maybeSingle();
+    if (!assignment) throw new Error("Assign the task to an active member of this project team.");
+  }
 
   const { error } = await supabase.from("project_tasks").insert({
     project_id: projectId,
     title,
     description: description || null,
     due_date: dueDate,
+    assigned_to: assignedTo,
     customer_visible: customerVisible,
     created_by: user.id
   });
@@ -198,11 +204,16 @@ export async function updateProjectTask(formData: FormData) {
   const taskId = requiredText(formData.get("task_id"), 64);
   const status = String(formData.get("status") ?? "");
   const priority = String(formData.get("priority") ?? "");
-  if (!["todo","in_progress","blocked","done","cancelled"].includes(status) || !["low","normal","high","urgent"].includes(priority)) {
+  const assignedTo = String(formData.get("assigned_to") ?? "").trim() || null;
+  if (assignedTo) {
+    const { data: assignment } = await supabase.from("project_team").select("user_id, profiles!inner(role,status)").eq("project_id", projectId).eq("user_id", assignedTo).eq("profiles.role", "staff").eq("profiles.status", "active").maybeSingle();
+    if (!assignment) throw new Error("Assign the task to an active member of this project team.");
+  }
+  if (["todo","in_progress","blocked","done","cancelled"].includes(status) || !["low","normal","high","urgent"].includes(priority)) {
     throw new Error("Invalid task status or priority.");
   }
   const { error } = await supabase.from("project_tasks").update({
-    status, priority, completed_at: status === "done" ? new Date().toISOString() : null,
+    status, priority, assigned_to: assignedTo, completed_at: status === "done" ? new Date().toISOString() : null,
     updated_at: new Date().toISOString()
   }).eq("id", taskId).eq("project_id", projectId);
   if (error) throw new Error("Unable to update project task.");

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { createProjectTask, createProjectUpdate } from "../actions";
+import { createProjectTask, createProjectUpdate, createProjectStage, updateProjectProgress } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +50,7 @@ export default async function AdminProjectDetailPage({ params }: { params: Promi
           <div className="project-record-list">{updates?.map(u => <article key={u.id}><strong>{u.title}</strong><span>{new Intl.DateTimeFormat("ar-EG", {dateStyle:"medium",timeStyle:"short"}).format(new Date(u.created_at))} · {u.customer_visible ? "مرئي للعميل" : "داخلي"}</span><p>{u.body}</p></article>)}{!updates?.length && <p className="admin-note">لا توجد تحديثات.</p>}</div>
         </section>
       </div>
-      <section className="admin-panel"><div className="admin-panel-heading"><h2>مراحل المشروع</h2><p>المراحل قابلة للإدارة من قاعدة البيانات حاليًا؛ واجهة تحرير المراحل قيد الاستكمال.</p></div>{stages?.length ? <div className="project-record-list">{stages.map(s=><article key={s.id}><strong>{s.name}</strong><span>{s.status} · {s.progress_percent}%</span></article>)}</div> : <p className="admin-note">لم تتم إضافة مراحل بعد.</p>}</section>
+      <section className="admin-panel"><div className="admin-panel-heading"><h2>مراحل المشروع</h2><p>إضافة مراحل التنفيذ وترتيبها وتحديد ظهورها للعميل.</p></div><form action={createProjectStage} className="project-create-form"><input type="hidden" name="project_id" value={id} /><label>اسم المرحلة<input name="name" required maxLength={160} /></label><label>الوصف<textarea name="description" rows={2} maxLength={2000} /></label><label>الترتيب<input name="sort_order" type="number" min="0" defaultValue="0" /></label><label className="project-check"><input type="checkbox" name="customer_visible" defaultChecked /> ظاهرة للعميل</label><button className="button-primary" type="submit">إضافة مرحلة</button></form>{stages?.length ? <div className="project-record-list">{stages.map(s=><article key={s.id}><strong>{s.name}</strong><span>{s.status} · {s.progress_percent}%</span></article>)}</div> : <p className="admin-note">لم تتم إضافة مراحل بعد.</p>}</section>
     </main>
   );
 }

@@ -277,3 +277,13 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .customer-request-list small { display: block; }
 @media (max-width: 850px) { .customer-detail-grid { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .customer-info { grid-template-columns: 1fr; } }
+
+.admin-heading-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.admin-user-access-form { display: grid; grid-template-columns: minmax(88px,1fr) minmax(88px,1fr) auto; gap: 6px; min-width: 260px; }
+.admin-user-access-form select {
+  min-width: 0; padding: 7px 8px; border: 1px solid var(--line);
+  border-radius: 7px; background: #081321; color: white; font: inherit; font-size: 11px;
+}
+.admin-user-access-form .button-primary { padding: 7px 10px; font-size: 11px; }
+.admin-readonly { color: var(--muted); font-size: 11px; }
+@media (max-width: 700px) { .admin-user-access-form { grid-template-columns: 1fr; min-width: 130px; } }

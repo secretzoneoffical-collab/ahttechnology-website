@@ -112,10 +112,9 @@ export default function SignupPage() {
           <label htmlFor="signup_email">{isArabic ? "البريد الإلكتروني" : "Email address"}</label>
           <input id="signup_email" type="email" autoComplete="email" maxLength={254} required value={email} onChange={(event) => setEmail(event.target.value)} />
 
-          {accountType === "customer" && <>
-            <label htmlFor="signup_phone">{isArabic ? "رقم الهاتف" : "Phone number"}</label>
-            <input id="signup_phone" type="tel" autoComplete="tel" maxLength={30} required value={phone} onChange={(event) => setPhone(event.target.value)} />
-          </>}
+          <label htmlFor="signup_phone">{isArabic ? "رقم الهاتف" : "Phone number"}</label>
+          <input id="signup_phone" type="tel" autoComplete="tel" maxLength={30} required={accountType === "customer"} value={phone} onChange={(event) => setPhone(event.target.value)} />
+          {accountType === "staff" && <small className="auth-muted">{isArabic ? "اختياري للموظف، ويساعد الإدارة في التواصل بخصوص طلب الانضمام." : "Optional for staff applicants; it helps the team contact you about your application."}</small>}
 
           <label htmlFor="signup_password">{isArabic ? "كلمة المرور" : "Password"}</label>
           <input id="signup_password" type="password" autoComplete="new-password" minLength={8} required value={password} onChange={(event) => setPassword(event.target.value)} />

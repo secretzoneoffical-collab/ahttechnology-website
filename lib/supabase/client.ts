@@ -1,6 +1,8 @@
 import { createBrowserClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "./database.types";
 
-let browserClient: ReturnType<typeof createBrowserClient> | undefined;
+let browserClient: SupabaseClient<Database> | undefined;
 
 export function createClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -10,6 +12,6 @@ export function createClient() {
     throw new Error("Missing Supabase public environment variables.");
   }
 
-  browserClient ??= createBrowserClient(url, publishableKey);
+  browserClient ??= createBrowserClient<Database>(url, publishableKey);
   return browserClient;
 }

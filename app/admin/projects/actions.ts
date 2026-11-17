@@ -138,3 +138,36 @@ export async function removeProjectStaff(formData: FormData) {
   revalidatePath("/admin/projects/" + projectId);
   revalidatePath("/dashboard");
 }
+
+
+export async function uploadProjectFile(formData: FormData) {
+  const { supabase, user } = await requireAdmin();
+  const projectId = requiredText(formData.get("project_id"), 64);
+  const upload = formData.get("file");
+  if (!(upload instanceof File) || upload.size < 1 || upload.size > 15 * 1024 * 1024) {
+    throw new Error("Choose a file smaller than 15 MB.");
+  }
+  const allowed = new Set([
+    "application/pdf", "image/jpeg", "image/png", "image/webp", "text/plain",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  ]);
+  if (!allowed.has(upload.type)) throw new Error("This file type is not allowed.");
+  const safeName = upload.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(-120) || "document";
+  const storagePath = projectId + "/" + crypto.randomUUID() + "-" + safeName;
+  const { error: uploadError } = await supabase.storage.from("aht-project-files")
+    .upload(storagePath, new Uint8Array(await upload.arrayBuffer()), { contentType: upload.type, upsert: false });
+  if (uploadError) throw new Error("Unable to upload file. Check Storage migration and project access.");
+  const customerVisible = formData.get("customer_visible") === "on";
+  const { error: recordError } = await supabase.from("project_files").insert({
+    project_id: projectId, uploaded_by: user.id, file_name: upload.name.slice(0, 255),
+    storage_path: storagePath, mime_type: upload.type, size_bytes: upload.size,
+    customer_visible: customerVisible
+  });
+  if (recordError) {
+    await supabase.storage.from("aht-project-files").remove([storagePath]);
+    throw new Error("File uploaded but its project record could not be saved.");
+  }
+  revalidatePath("/admin/projects/" + projectId);
+  revalidatePath("/dashboard");
+}

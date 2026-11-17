@@ -27,14 +27,20 @@ Use two projects:
 | Customer A | Insert/update/delete projects, stages, tasks, updates, file metadata, or team links | Denied |
 | Customer B | Read Project A | Denied |
 | Staff A | Read Project A and its internal work records | Allowed |
+| Staff A | Update a task assigned to Staff A | Allowed |
+| Staff A | Update a task assigned to Staff B or unassigned | Denied |
+| Staff A | Change task assignee, project, creator, or customer-visible flag | Denied by trigger |
+| Staff A | Create an internal project update | Allowed |
+| Staff A | Create a customer-visible update | Denied |
 | Staff A | Read Project B | Denied |
 | Staff B | Read Project A | Denied |
-| Staff A | Upload a file to Project A | Allowed |
+| Staff A | Upload a file to Project A | Denied (current policy is Admin-only) |
 | Staff A | Upload a file to Project B | Denied |
 | Customer A | Download customer-visible file in Project A | Allowed |
 | Customer A | Download internal file in Project A | Denied |
 | Customer A | Download a guessed object path from Project B | Denied |
 | Admin A | Manage all projects and publish customer-visible updates | Allowed |
+| Admin A | Upload, remove, or change customer visibility of project files | Allowed |
 | Suspended Customer | Read any project resource | Denied |
 
 ## Functional acceptance
@@ -50,4 +56,4 @@ Use two projects:
 - Inactive users are denied at both application and RLS layers.
 
 ## Test execution record
-No production user accounts or real customer data were used for this review. These tests must be executed in staging after the database migrations are safely installed. Record each result, actor, timestamp, and evidence before declaring the portal production-ready.
+No production user accounts or real customer data were used for this review. The project migrations are now installed in the live Supabase project, but the identity-based cases above still require controlled test identities in a non-production environment. Anonymous table grants, project-table RLS activation, private bucket configuration, and zero Security Advisor findings have been verified separately. Record each result, actor, timestamp, and evidence before declaring the portal production-ready.

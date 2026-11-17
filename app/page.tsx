@@ -16,7 +16,7 @@ export default function HomePage() {
     <main>
       <header className="site-header">
         <div className="container nav">
-          <a className="brand" href="#home" aria-label="AHT home">
+          <a className="brand" href="/" aria-label="AHT home">
             <span className="brand-mark">AHT</span>
             <span>ALI HANY TECHNOLOGY</span>
           </a>

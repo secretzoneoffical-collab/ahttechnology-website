@@ -185,11 +185,12 @@ export async function updateProjectStage(formData: FormData) {
   const stageId = requiredText(formData.get("stage_id"), 64);
   const status = String(formData.get("status") ?? "");
   const progress = Number(formData.get("progress_percent"));
+  const customerVisible = formData.get("customer_visible") === "on";
   if (!["pending","in_progress","completed","blocked"].includes(status) || !Number.isInteger(progress) || progress < 0 || progress > 100) {
     throw new Error("Invalid stage status or progress.");
   }
   const { error } = await supabase.from("project_stages").update({
-    status, progress_percent: progress,
+    status, progress_percent: progress, customer_visible: customerVisible,
     completed_at: status === "completed" ? new Date().toISOString() : null,
     updated_at: new Date().toISOString()
   }).eq("id", stageId).eq("project_id", projectId);
@@ -205,15 +206,17 @@ export async function updateProjectTask(formData: FormData) {
   const status = String(formData.get("status") ?? "");
   const priority = String(formData.get("priority") ?? "");
   const assignedTo = String(formData.get("assigned_to") ?? "").trim() || null;
+  const customerVisible = formData.get("customer_visible") === "on";
+  if (!["todo","in_progress","blocked","done","cancelled"].includes(status) || !["low","normal","high","urgent"].includes(priority)) {
+    throw new Error("Invalid task status or priority.");
+  }
   if (assignedTo) {
     const { data: assignment } = await supabase.from("project_team").select("user_id, profiles!inner(role,status)").eq("project_id", projectId).eq("user_id", assignedTo).eq("profiles.role", "staff").eq("profiles.status", "active").maybeSingle();
     if (!assignment) throw new Error("Assign the task to an active member of this project team.");
   }
-  if (["todo","in_progress","blocked","done","cancelled"].includes(status) || !["low","normal","high","urgent"].includes(priority)) {
-    throw new Error("Invalid task status or priority.");
-  }
   const { error } = await supabase.from("project_tasks").update({
-    status, priority, assigned_to: assignedTo, customer_visible: customerVisible, completed_at: status === "done" ? new Date().toISOString() : null,
+    status, priority, assigned_to: assignedTo, customer_visible: customerVisible,
+    completed_at: status === "done" ? new Date().toISOString() : null,
     updated_at: new Date().toISOString()
   }).eq("id", taskId).eq("project_id", projectId);
   if (error) throw new Error("Unable to update project task.");

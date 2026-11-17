@@ -13,11 +13,14 @@ export default async function CustomerProjectPage({ params }: { params: Promise<
   if (!profile || profile.status !== "active") redirect("/dashboard");
   const { data: project } = await supabase.from("projects").select("id, project_code, name, description, status, progress_percent, start_date, due_date").eq("id", id).maybeSingle();
   if (!project) notFound();
-  if (profile.role !== "admin") {
+  if (profile.role === "customer") {
     const { data: link } = await supabase.from("customer_users").select("customer_id").eq("user_id", profile.id).maybeSingle();
     if (!link) notFound();
     const { data: ownership } = await supabase.from("projects").select("id").eq("id", id).eq("customer_id", link.customer_id).maybeSingle();
     if (!ownership) notFound();
+  } else if (profile.role === "staff") {
+    const { data: assignment } = await supabase.from("project_team").select("project_id").eq("project_id", id).eq("user_id", profile.id).maybeSingle();
+    if (!assignment) notFound();
   }
   const [{ data: stages }, { data: tasks }, { data: updates }, { data: files }] = await Promise.all([
     supabase.from("project_stages").select("id, name, status, progress_percent, sort_order").eq("project_id", id).eq("customer_visible", true).order("sort_order"),

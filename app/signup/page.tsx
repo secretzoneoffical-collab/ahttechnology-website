@@ -14,6 +14,7 @@ export default function SignupPage() {
   const [accountType, setAccountType] = useState<"customer" | "staff">("customer");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -25,6 +26,10 @@ export default function SignupPage() {
     setError("");
     setSuccess("");
 
+    if (accountType === "customer" && phone.trim().length < 7) {
+      setError(isArabic ? "أدخل رقم هاتف صحيحًا (7 أرقام على الأقل)." : "Enter a valid phone number (at least 7 characters).");
+      return;
+    }
     if (password.length < 8) {
       setError(isArabic ? "كلمة المرور لازم تكون 8 أحرف على الأقل." : "Password must be at least 8 characters.");
       return;
@@ -43,7 +48,8 @@ export default function SignupPage() {
         options: {
           data: {
             full_name: fullName.trim(),
-            account_type: accountType
+            account_type: accountType,
+            phone: phone.trim()
           },
           emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard`
         }
@@ -66,8 +72,8 @@ export default function SignupPage() {
               ? "تم استلام طلب انضمامك. لو تأكيد البريد الإلكتروني مفعّل، راجع بريدك أولًا. حساب الموظف سيظل غير نشط لحد مراجعة AHT والموافقة عليه."
               : "Your staff application was received. If email confirmation is enabled, verify your email. Your staff account will remain inactive until AHT reviews and approves it.")
           : (isArabic
-              ? "تم إنشاء حساب العميل. لو تأكيد البريد الإلكتروني مفعّل، راجع بريدك لتأكيد الحساب ثم سجّل الدخول."
-              : "Your customer account has been created. If email confirmation is enabled, check your inbox to verify it, then sign in.")
+              ? "تم إنشاء حساب العميل وتفعيله تلقائيًا. لو تأكيد البريد الإلكتروني مفعّل، راجع بريدك لتأكيد الحساب ثم سجّل الدخول."
+              : "Your customer account has been created and activated automatically. If email confirmation is enabled, check your inbox to verify it, then sign in.")
       );
     } catch {
       setError(isArabic ? "حدث خطأ غير متوقع أثناء التسجيل. حاول مرة أخرى." : "An unexpected error occurred while signing up. Please try again.");
@@ -105,6 +111,11 @@ export default function SignupPage() {
 
           <label htmlFor="signup_email">{isArabic ? "البريد الإلكتروني" : "Email address"}</label>
           <input id="signup_email" type="email" autoComplete="email" maxLength={254} required value={email} onChange={(event) => setEmail(event.target.value)} />
+
+          {accountType === "customer" && <>
+            <label htmlFor="signup_phone">{isArabic ? "رقم الهاتف" : "Phone number"}</label>
+            <input id="signup_phone" type="tel" autoComplete="tel" maxLength={30} required value={phone} onChange={(event) => setPhone(event.target.value)} />
+          </>}
 
           <label htmlFor="signup_password">{isArabic ? "كلمة المرور" : "Password"}</label>
           <input id="signup_password" type="password" autoComplete="new-password" minLength={8} required value={password} onChange={(event) => setPassword(event.target.value)} />

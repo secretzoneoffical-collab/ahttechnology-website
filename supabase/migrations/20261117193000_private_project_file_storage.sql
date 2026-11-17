@@ -22,19 +22,21 @@ using (
   bucket_id = 'aht-project-files'
   and case
     when split_part(name, '/', 1) ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
-    then private.can_access_project(split_part(name, '/', 1)::uuid)
+    then (
+      private.can_access_project(split_part(name, '/', 1)::uuid)
+      and exists (
+        select 1 from public.project_files f
+        where f.storage_path = storage.objects.name
+          and f.project_id = split_part(storage.objects.name, '/', 1)::uuid
+          and (
+            private.is_admin()
+            or private.is_assigned_project_staff(f.project_id)
+            or (f.customer_visible and private.is_linked_project_customer(f.project_id))
+          )
+      )
+    )
     else false
   end
-  and exists (
-    select 1 from public.project_files f
-    where f.storage_path = storage.objects.name
-      and f.project_id = split_part(storage.objects.name, '/', 1)::uuid
-      and (
-        private.is_admin()
-        or private.is_assigned_project_staff(f.project_id)
-        or (f.customer_visible and private.is_linked_project_customer(f.project_id))
-      )
-  )
 );
 
 create policy aht_project_files_insert on storage.objects
@@ -43,10 +45,12 @@ with check (
   bucket_id = 'aht-project-files'
   and case
     when split_part(name, '/', 1) ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
-    then private.can_access_project(split_part(name, '/', 1)::uuid)
+    then (
+      private.can_access_project(split_part(name, '/', 1)::uuid)
+      and (private.is_admin() or private.is_assigned_project_staff(split_part(name, '/', 1)::uuid))
+    )
     else false
   end
-  and (private.is_admin() or private.is_assigned_project_staff(split_part(name, '/', 1)::uuid))
 );
 
 create policy aht_project_files_delete on storage.objects

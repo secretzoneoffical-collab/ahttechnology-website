@@ -157,12 +157,13 @@ After creating a controlled test account and confirming the intended signup poli
 
 ## Follow-up: Project Portal applied to live Supabase (2026-11-17)
 
-The four project-portal migrations have since been applied successfully to the live Supabase project. Current ledger entries now include:
+The five project-portal migrations have since been applied successfully to the live Supabase project. Current ledger entries now include:
 
 - `20261117163107_create_project_management_foundation`
 - `20261117163111_private_project_file_storage`
 - `20261117163133_project_portal_policy_performance`
 - `20261117163157_admin_only_project_storage_uploads`
+- `20261117164416_validate_project_memberships`
 
 The following seven tables are now present in `public`, all with RLS enabled:
 `customer_users`, `projects`, `project_team`, `project_stages`, `project_tasks`, `project_updates`, and `project_files`.
@@ -171,6 +172,7 @@ The private Storage bucket `aht-project-files` is present with a 15 MiB file lim
 
 Additional authorization hardening:
 - Staff can read only projects assigned to them.
+- Database triggers enforce active customer and staff membership, ensure task assignees belong to the project team, and clear task assignments when a team member is removed.
 - Staff task updates are restricted to tasks assigned to their own user ID.
 - Database triggers prevent staff from changing task project ownership, assignee, customer visibility, or creator, and prevent a task from referencing a stage belonging to another project.
 - Customer access is mapped through `customer_users` and customer-visible flags.

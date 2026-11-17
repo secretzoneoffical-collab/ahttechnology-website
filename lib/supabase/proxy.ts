@@ -16,17 +16,22 @@ export async function updateSession(request: NextRequest) {
       getAll() {
         return request.cookies.getAll();
       },
-      setAll(cookiesToSet) {
+      setAll(cookiesToSet, headers) {
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
         response = NextResponse.next({ request });
         cookiesToSet.forEach(({ name, value, options }) => {
           response.cookies.set(name, value, options);
         });
+        if (headers) {
+          Object.entries(headers).forEach(([name, value]) => {
+            response.headers.set(name, value);
+          });
+        }
       }
     }
   });
 
-  // Refresh/validate the Auth token. Do not use getSession() for authorization.
+  // Keep this call immediately after client creation to refresh and verify the session.
   await supabase.auth.getClaims();
 
   return response;

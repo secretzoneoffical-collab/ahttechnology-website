@@ -24,7 +24,7 @@ export default async function AdminUsersPage({
   const { supabase, user } = await requireAdmin();
   const { data: profiles, error } = await supabase
     .from("profiles")
-    .select("id, full_name, role, status, created_at")
+    .select("id, full_name, email, phone, role, status, created_at")
     .order("created_at", { ascending: false })
     .limit(100);
 
@@ -55,11 +55,13 @@ export default async function AdminUsersPage({
         ) : (
           <div className="admin-table-wrap">
             <table className="admin-table">
-              <thead><tr><th>الاسم</th><th>الدور الحالي</th><th>الحالة</th><th>تاريخ الإنشاء</th><th>إدارة الوصول</th></tr></thead>
+              <thead><tr><th>الاسم</th><th>البريد الإلكتروني</th><th>الهاتف</th><th>الدور الحالي</th><th>الحالة</th><th>تاريخ الإنشاء</th><th>إدارة الوصول</th></tr></thead>
               <tbody>
                 {profiles.map((item) => (
                   <tr key={item.id}>
                     <td>{item.full_name || "بدون اسم"}{item.id === user.id && <small className="admin-cell-sub">حسابك الحالي</small>}</td>
+                    <td>{item.email ? <a href={`mailto:${item.email}`}>{item.email}</a> : "—"}</td>
+                    <td dir="ltr">{item.phone || "—"}</td>
                     <td><span className="admin-role">{roleLabels[item.role] || item.role}</span></td>
                     <td><span className={`admin-status ${item.status === "active" ? "active" : item.status === "pending" ? "pending" : "suspended"}`}>{statusLabels[item.status] || item.status}</span></td>
                     <td>{new Intl.DateTimeFormat("ar-EG", { dateStyle: "medium" }).format(new Date(item.created_at))}</td>

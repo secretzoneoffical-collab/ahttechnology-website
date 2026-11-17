@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { updateCustomer } from "../actions";
+import { updateCustomer, linkCustomerAccount, unlinkCustomerAccount } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +16,7 @@ export default async function AdminCustomerDetailPage({
   searchParams
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ created?: string; updated?: string }>;
+  searchParams: Promise<{ created?: string; updated?: string; linked?: string; unlinked?: string }>;
 }) {
   const { id } = await params;
   const query = await searchParams;
@@ -31,7 +31,7 @@ export default async function AdminCustomerDetailPage({
 
   if (error || !customer) notFound();
 
-  const { data: requests } = await supabase
+  const [{ data: requests }, { data: linkedAccounts }, { data: eligibleAccounts }] = await Promise.all([supabase
     .from("service_requests")
     .select("id, service_type, status, message, created_at")
     .eq("customer_id", id)
@@ -48,7 +48,7 @@ export default async function AdminCustomerDetailPage({
         </div>
         <Link className="button-secondary" href="/admin/customers">العودة للعملاء</Link>
       </div>
-      {(query.created === "1" || query.updated === "1") && <p className="auth-success" role="status">{query.created === "1" ? "تم إنشاء ملف العميل وربطه بالطلب." : "تم تحديث بيانات العميل."}</p>}
+      {(query.created === "1" || query.updated === "1" || query.linked === "1" || query.unlinked === "1") && <p className="auth-success" role="status">{query.created === "1" ? "تم إنشاء ملف العميل وربطه بالطلب." : query.updated === "1" ? "تم تحديث بيانات العميل." : query.linked === "1" ? "تم ربط حساب العميل بنجاح." : "تم فك ربط الحساب."}</p>}
       <div className="customer-detail-grid">
         <section className="admin-panel">
           <div className="admin-panel-heading"><h2>بيانات العميل</h2><p>معلومات التواصل والتصنيف الداخلي.</p></div>

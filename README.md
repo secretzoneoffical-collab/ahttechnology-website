@@ -39,7 +39,7 @@ Only the Supabase publishable key belongs in browser-accessible environment vari
 - Bilingual landing page content (English and Arabic)
 - Service catalogue covering AHT's eight approved service groups
 - Public service inquiry form connected to Supabase PostgreSQL
-- Admin-only service request inbox at `/admin/requests`
+- Admin-only service request inbox at `/admin/requests` with status updates, internal notes, and last-contact timestamps
 - Responsive AHT design foundation
 - Supabase browser and server clients
 - Session refresh through the Next.js root proxy

@@ -37,7 +37,7 @@ export default async function AdminProjectDetailPage({ params }: { params: Promi
             <input type="hidden" name="project_id" value={id} />
             <label>عنوان المهمة<input name="title" required maxLength={180} /></label>
             <label>التفاصيل<textarea name="description" rows={2} maxLength={3000} /></label>
-            <label>موعد التنفيذ<input type="date" name="due_date" /></label>
+            <label>موعد التنفيذ<input type="date" name="due_date" /></label>\n            <label>إسناد المهمة لموظف<select name="assigned_to" defaultValue=""><option value="">بدون إسناد</option>{team?.map(member=>{const staff=staffOptions?.find(s=>s.id===member.user_id);return staff?<option key={staff.id} value={staff.id}>{staff.full_name || staff.id}</option>:null;})}</select></label>
             <label className="project-check"><input type="checkbox" name="customer_visible" /> ظاهرة للعميل</label>
             <button className="button-primary" type="submit">إضافة مهمة</button>
           </form>

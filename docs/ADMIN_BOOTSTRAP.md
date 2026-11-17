@@ -57,7 +57,11 @@ Check that exactly one row is returned and that its role is `admin` and status i
 1. Sign in through `/login` using that account.
 2. Confirm that `/dashboard` displays the Admin link.
 3. Open `/admin` and verify the dashboard, requests, customers, users, and team pages.
-4. Sign out and confirm that protected pages redirect unauthenticated visitors to login.
+4. Open **Admin → Projects** and confirm that the project workspace loads.
+5. Create a Staff account through the Supabase owner workflow, set its profile role to `staff`, and confirm it appears in Admin → Team.
+6. Create a Customer account through the approved owner workflow, keep its profile role as `customer`, create or select its CRM customer record, and link the account from the customer profile.
+7. Only after controlled test identities exist, execute the scenarios in [the project portal security test plan](PROJECT_PORTAL_SECURITY_TEST_PLAN.md).
+8. Sign out and confirm that protected pages redirect unauthenticated visitors to login.
 
 ## Security notes
 

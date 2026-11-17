@@ -2,7 +2,7 @@
 
 **Project:** `mdvxbvaasspxqusrvfiq`
 **Checked:** 2026-11-17
-**Status:** Live migration ledger verified; four project-portal migrations are now tracked at their exact applied versions.
+**Status:** Live migration ledger verified; five project-portal migrations are now tracked at their exact applied versions.
 
 ## Applied versions currently present in Supabase
 

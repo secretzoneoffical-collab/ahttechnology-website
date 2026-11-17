@@ -46,7 +46,7 @@ Only the Supabase publishable key belongs in browser-accessible environment vari
 - Supabase browser and server clients
 - Generated Supabase database types in `lib/supabase/database.types.ts`
 - Session refresh through the Next.js root proxy
-- Public customer/staff self-registration: customers are active by default; staff accounts require administrator approval
+- Public customer/staff self-registration: customers are active by default and are automatically linked to a CRM customer record; staff accounts remain pending until administrator approval
 - Email/password sign-in
 - Password recovery and update flow
 - Protected dashboard for Admin, Staff, and Customer roles
@@ -65,11 +65,11 @@ Only the Supabase publishable key belongs in browser-accessible environment vari
 - Project documents are stored in a private Storage bucket (`aht-project-files`) with short-lived signed download URLs. Storage writes/deletes are currently Admin-only.
 - Configure the Supabase Auth Site URL and allowed redirect URLs for the eventual deployment origin before testing password recovery.
 - Public self-registration uses the `account_type` Auth metadata field, but database-side trigger logic only accepts `customer` or `staff`; Admin cannot be self-selected.
-- New customer profiles are active automatically. New staff profiles are created as `pending` and cannot access the staff workspace until an Admin activates them from `/admin/users`.
-- Customer accounts must still be linked by an Admin to the correct CRM customer record before customer projects appear. This prevents self-registration from claiming an existing customer record based only on an email address.
+- New customer profiles are active automatically and receive a new CRM customer record plus a `customer_users` link during Auth user creation. Customer signup requires a phone number because the CRM customer record requires one. New staff profiles are created as `pending` and cannot access the staff workspace until an Admin activates them from `/admin/users`.
+- Self-registration never links a user to an existing CRM customer by email alone; it creates a separate prospect record, which Admin can review and merge/associate operationally if needed.
 - No administrator account is created by this repository.
 - GitHub Actions runs ESLint, TypeScript, and production build checks on pushes and pull requests to `main`.
-- CI uses the committed npm lockfile, runs `npm ci`, and audits for high/critical dependency vulnerabilities; see [dependency security audit](docs/DEPENDENCY_SECURITY_AUDIT.md).
+- CI uses the committed npm lockfile and `npm ci`. Production dependencies are blocked on high/critical advisories. A currently unpatched high-severity advisory remains in transitive development-only `picomatch` dependencies; full dependency audit blocks critical findings while the high finding is tracked in [dependency security audit](docs/DEPENDENCY_SECURITY_AUDIT.md).
 - The live Supabase project has the Project Management schema, RLS, private Storage, and policy hardening applied. See [the project implementation specification](docs/PROJECT_MANAGEMENT_SPEC.md).
 - Six legacy migration files are still missing from the repository; see [migration recovery notes](docs/LEGACY_MIGRATION_RECOVERY.md). This is a fresh-install reproducibility gap, not a missing schema on the live project.
 - Cross-customer isolation tests still require controlled test identities in a non-production environment.

@@ -61,3 +61,8 @@ Only the Supabase publishable key belongs in browser-accessible environment vari
 - No administrator account is created by this repository.
 - GitHub Actions runs ESLint, TypeScript, and production build checks on pushes and pull requests to `main`.
 - Run `npm run typecheck`, `npm run lint`, and `npm run build` locally before release.
+
+
+## First administrator setup
+
+The first Admin is intentionally not created automatically. Follow [the secure bootstrap guide](docs/ADMIN_BOOTSTRAP.md) as the Supabase project owner after creating the intended Auth user.

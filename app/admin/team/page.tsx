@@ -7,7 +7,7 @@ export default async function AdminTeamPage() {
   const { supabase } = await requireAdmin();
   const { data: staff, error } = await supabase
     .from("profiles")
-    .select("id, full_name, status, created_at")
+    .select("id, full_name, email, phone, status, created_at")
     .eq("role", "staff")
     .order("created_at", { ascending: false })
     .limit(100);
@@ -45,11 +45,13 @@ export default async function AdminTeamPage() {
         ) : (
           <div className="admin-table-wrap">
             <table className="admin-table">
-              <thead><tr><th>اسم الموظف</th><th>حالة الحساب</th><th>تاريخ الانضمام</th><th>الإجراء</th></tr></thead>
+              <thead><tr><th>اسم الموظف</th><th>البريد الإلكتروني</th><th>الهاتف</th><th>حالة الحساب</th><th>تاريخ الانضمام</th><th>الإجراء</th></tr></thead>
               <tbody>
                 {staff.map((member) => (
                   <tr key={member.id}>
                     <td>{member.full_name || "بدون اسم"}</td>
+                    <td>{member.email ? <a href={`mailto:${member.email}`}>{member.email}</a> : "—"}</td>
+                    <td dir="ltr">{member.phone || "—"}</td>
                     <td><span className={`admin-status ${member.status === "active" ? "active" : member.status === "pending" ? "pending" : "suspended"}`}>{member.status === "active" ? "نشط" : member.status === "pending" ? "بانتظار الموافقة" : "موقوف"}</span></td>
                     <td>{new Intl.DateTimeFormat("ar-EG", { dateStyle: "medium" }).format(new Date(member.created_at))}</td>
                     <td><Link className="auth-link" href="/admin/users">تعديل الصلاحيات</Link></td>

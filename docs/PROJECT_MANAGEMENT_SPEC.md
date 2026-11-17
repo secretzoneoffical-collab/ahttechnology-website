@@ -76,13 +76,14 @@ The repository now includes an Admin project list/create/edit experience, custom
 
 ## 6. Live migration status
 
-The following five project migrations are applied to the live Supabase project and tracked in GitHub at their exact live versions:
+The following six project migrations are applied to the live Supabase project and tracked in GitHub at their exact live versions:
 
 - `20261117163107_create_project_management_foundation.sql` — seven project/customer-link tables, indexes, authorization helpers, RLS policies, and task-integrity triggers.
 - `20261117163111_private_project_file_storage.sql` — private `aht-project-files` bucket and Storage object policies.
 - `20261117163133_project_portal_policy_performance.sql` — policy consolidation and foreign-key indexes.
 - `20261117163157_admin_only_project_storage_uploads.sql` — restrict Storage writes/deletes to Admin.
 - `20261117164416_validate_project_memberships.sql` — active customer/staff membership validation and task-assignee integrity.
+- `20261117164631_restrict_staff_task_edits.sql` — staff task updates are limited to status and completion fields.
 
 The first six legacy migration SQL files remain absent from the repository. Do not invent their contents or replay them against the live database. See `docs/LEGACY_MIGRATION_RECOVERY.md`.
 

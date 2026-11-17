@@ -50,7 +50,7 @@ export default async function AdminUsersPage({
         ) : !profiles?.length ? (
           <div className="admin-empty">
             <strong>لا توجد حسابات حتى الآن</strong>
-            <span>سيظهر المستخدمون هنا بعد إنشاء حساباتهم من خلال Supabase Auth.</span>
+            <span>سيظهر المستخدمون هنا بعد التسجيل من صفحة إنشاء الحساب أو بعد إضافة حساب من الإدارة.</span>
           </div>
         ) : (
           <div className="admin-table-wrap">

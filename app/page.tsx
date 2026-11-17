@@ -1,3 +1,4 @@
+import Link from "next/link";
 const services = [
   { number: "01", title: "Business Systems Audit", description: "Review workflows, identify gaps, and build a practical improvement plan." },
   { number: "02", title: "POS / ERP Setup & Optimization", description: "Configure and improve the systems that support your daily business operations." },
@@ -19,12 +20,12 @@ export default function HomePage() {
             <span>ALI HANY TECHNOLOGY</span>
           </a>
           <nav className="nav-links" aria-label="Main navigation">
-            <a href="/services">Services</a>
-            <a href="/about">About</a>
-            <a href="/contact">Contact</a>
+            <Link href="/services">Services</Link>
+            <Link href="/about">About</Link>
+            <Link href="/contact">Contact</Link>
             <a href="#arabic" lang="ar" dir="rtl">العربية</a>
           </nav>
-          <div className="hero-actions" style={{ marginTop: 0 }}><a className="button-secondary" href="/login">Client Portal</a><a className="nav-cta" href="/contact">Let’s Talk <span aria-hidden="true">↗</span></a></div>
+          <div className="hero-actions" style={{ marginTop: 0 }}><Link className="button-secondary" href="/login">Client Portal</Link><Link className="nav-cta" href="/contact">Let’s Talk <span aria-hidden="true">↗</span></Link></div>
         </div>
       </header>
 
@@ -38,8 +39,8 @@ export default function HomePage() {
               turning everyday challenges into practical technology solutions.
             </p>
             <div className="hero-actions">
-              <a className="button-primary" href="/contact">Discuss your project <span aria-hidden="true">↗</span></a>
-              <a className="button-secondary" href="/services">Explore services</a>
+              <Link className="button-primary" href="/contact">Discuss your project <span aria-hidden="true">↗</span></Link>
+              <Link className="button-secondary" href="/services">Explore services</Link>
             </div>
           </div>
 

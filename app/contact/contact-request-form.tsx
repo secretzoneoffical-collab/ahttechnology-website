@@ -76,7 +76,7 @@ export default function ContactRequestForm() {
       {status === "success" && <p className="auth-success" role="status">{isArabic ? "وصلنا طلبك بنجاح. فريق AHT هيراجعه ويتواصل معاك." : "Your request has been received. The AHT team will review it and get back to you."}</p>}
       {status === "error" && <p className="auth-error" role="alert">{error}</p>}
       <button className="button-primary auth-submit" type="submit" disabled={status === "sending"}>
-        {status === "sending" ? "{isArabic ? "جارٍ إرسال الطلب..." : "Sending request..."}" : "{isArabic ? "إرسال طلب الخدمة" : "Send service request"}"}
+        {status === "sending" ? (isArabic ? "جارٍ إرسال الطلب..." : "Sending request...") : (isArabic ? "إرسال طلب الخدمة" : "Send service request")}
       </button>
       <p className="auth-muted">{isArabic ? "إرسال الطلب لا يعني قبول عرض أو تحديد سعر؛ هنراجع التفاصيل ونتواصل معاك." : "Submitting a request does not confirm a quote or price. We will review the details and contact you."}</p>
     </form>

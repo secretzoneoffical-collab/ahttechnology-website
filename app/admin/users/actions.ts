@@ -31,15 +31,14 @@ export async function updateUserAccess(formData: FormData) {
     throw new Error("This account cannot be managed from this screen.");
   }
 
-  const { data: updated, error } = await supabase
-    .from("profiles")
-    .update({ role, status, updated_at: new Date().toISOString() })
-    .eq("id", userId)
-    .select("id")
-    .maybeSingle();
+  const { error } = await supabase.rpc("admin_update_profile_access", {
+    target_user_id: userId,
+    new_role: role,
+    new_status: status
+  });
 
-  if (error || !updated) {
-    throw new Error("Unable to update this account. Check database permissions.");
+  if (error) {
+    throw new Error("Unable to update this account. Check administrator access and database permissions.");
   }
 
   revalidatePath("/admin");

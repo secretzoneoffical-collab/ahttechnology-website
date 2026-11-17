@@ -44,6 +44,7 @@ Only the Supabase publishable key belongs in browser-accessible environment vari
 - Staff directory at `/admin/team` and admin-only role/status management for existing accounts at `/admin/users`; Admin accounts cannot be changed through the UI
 - Responsive AHT design foundation
 - Supabase browser and server clients
+- Generated Supabase database types in `lib/supabase/database.types.ts`
 - Session refresh through the Next.js root proxy
 - Email/password sign-in
 - Password recovery and update flow
@@ -65,6 +66,7 @@ Only the Supabase publishable key belongs in browser-accessible environment vari
 - Public self-registration is intentionally not implemented.
 - No administrator account is created by this repository.
 - GitHub Actions runs ESLint, TypeScript, and production build checks on pushes and pull requests to `main`.
+- CI uses the committed npm lockfile, runs `npm ci`, and audits for high/critical dependency vulnerabilities; see [dependency security audit](docs/DEPENDENCY_SECURITY_AUDIT.md).
 - The live Supabase project has the Project Management schema, RLS, private Storage, and policy hardening applied. See [the project implementation specification](docs/PROJECT_MANAGEMENT_SPEC.md).
 - Six legacy migration files are still missing from the repository; see [migration recovery notes](docs/LEGACY_MIGRATION_RECOVERY.md). This is a fresh-install reproducibility gap, not a missing schema on the live project.
 - Cross-customer isolation tests still require controlled test identities in a non-production environment.

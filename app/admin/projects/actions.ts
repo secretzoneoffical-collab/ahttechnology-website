@@ -115,3 +115,26 @@ export async function updateProjectProgress(formData: FormData) {
   revalidatePath("/admin/projects/" + projectId);
   revalidatePath("/dashboard");
 }
+
+
+export async function assignProjectStaff(formData: FormData) {
+  const { supabase, user } = await requireAdmin();
+  const projectId = requiredText(formData.get("project_id"), 64);
+  const staffId = requiredText(formData.get("user_id"), 64);
+  const { data: staff } = await supabase.from("profiles").select("id, role, status").eq("id", staffId).maybeSingle();
+  if (!staff || staff.role !== "staff" || staff.status !== "active") throw new Error("Choose an active staff account.");
+  const { error } = await supabase.from("project_team").insert({ project_id: projectId, user_id: staffId, assigned_by: user.id });
+  if (error) throw new Error("Unable to assign staff member.");
+  revalidatePath("/admin/projects/" + projectId);
+  revalidatePath("/dashboard");
+}
+
+export async function removeProjectStaff(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const projectId = requiredText(formData.get("project_id"), 64);
+  const staffId = requiredText(formData.get("user_id"), 64);
+  const { error } = await supabase.from("project_team").delete().eq("project_id", projectId).eq("user_id", staffId);
+  if (error) throw new Error("Unable to remove staff assignment.");
+  revalidatePath("/admin/projects/" + projectId);
+  revalidatePath("/dashboard");
+}

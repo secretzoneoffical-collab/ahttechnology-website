@@ -1,29 +1,43 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useSyncExternalStore, type ReactNode } from "react";
 
 type SiteLanguage = "en" | "ar";
 type LanguageContextValue = { language: SiteLanguage; toggleLanguage: () => void };
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
+const listeners = new Set<() => void>();
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+function getSnapshot(): SiteLanguage {
+  if (typeof window === "undefined") return "en";
+  return window.localStorage.getItem("aht-site-language") === "ar" ? "ar" : "en";
+}
+
+function getServerSnapshot(): SiteLanguage {
+  return "en";
+}
+
+function setSiteLanguage(language: SiteLanguage) {
+  window.localStorage.setItem("aht-site-language", language);
+  listeners.forEach((listener) => listener());
+}
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<SiteLanguage>("en");
-
-  useEffect(() => {
-    const saved = window.localStorage.getItem("aht-site-language");
-    if (saved === "ar" || saved === "en") setLanguage(saved);
-  }, []);
+  const language = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   useEffect(() => {
     document.documentElement.lang = language;
     document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
-    window.localStorage.setItem("aht-site-language", language);
   }, [language]);
 
   const value = useMemo(() => ({
     language,
-    toggleLanguage: () => setLanguage((current) => current === "en" ? "ar" : "en")
+    toggleLanguage: () => setSiteLanguage(language === "en" ? "ar" : "en")
   }), [language]);
 
   return (

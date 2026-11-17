@@ -33,6 +33,15 @@ export default async function AdminDashboardPage() {
     .from("customers")
     .select("id", { count: "exact", head: true });
 
+  const { count: totalProjects } = await supabase
+    .from("projects")
+    .select("id", { count: "exact", head: true });
+
+  const { count: activeProjects } = await supabase
+    .from("projects")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "active");
+
   const { count: adminUsers } = await supabase
     .from("profiles")
     .select("id", { count: "exact", head: true })
@@ -56,6 +65,8 @@ export default async function AdminDashboardPage() {
         <article className="admin-stat"><span>طلبات الخدمات</span><strong>{serviceRequests ?? 0}</strong><small>{newRequests ?? 0} طلب جديد</small></article>
         <article className="admin-stat"><span>سجل العملاء</span><strong>{customers ?? 0}</strong></article>
         <article className="admin-stat"><span>فريق العمل</span><strong>{staffUsers ?? 0}</strong></article>
+        <article className="admin-stat"><span>إجمالي المشاريع</span><strong>{totalProjects ?? 0}</strong></article>
+        <article className="admin-stat"><span>مشاريع قيد التنفيذ</span><strong>{activeProjects ?? 0}</strong></article>
       </section>
 
       <section className="admin-panel">

@@ -190,3 +190,6 @@ Verification after application:
 No Auth users or project records were created during this implementation. Therefore cross-customer runtime isolation still requires controlled test identities in a non-production environment.
 
 The first six legacy migration SQL files remain missing from GitHub. The current ledger-to-file alignment and recovery plan are documented in `docs/LEGACY_MIGRATION_RECOVERY.md`. The project portal migrations are tracked using their exact live version numbers.
+
+
+**Legacy source caveat:** The final legacy migration filename now uses the exact live ledger version `20261117153944`, but its SQL body has not been independently verified against the original applied source. The first six legacy migration files are still missing. The six Project Portal migrations, by contrast, were applied from the tracked SQL and their filenames now match the resulting live ledger versions.

@@ -87,6 +87,7 @@ export default function LoginPage() {
           <LoginForm />
         </Suspense>
         <Link className="auth-link" href="/forgot-password">{isArabic ? "نسيت كلمة المرور؟" : "Forgot your password?"}</Link>
+        <Link className="auth-link" href="/signup">{isArabic ? "ليس لديك حساب؟ إنشاء حساب جديد" : "New to AHT? Create an account"}</Link>
         <Link className="auth-back" href="/">{isArabic ? "العودة إلى الموقع الرئيسي" : "Back to website"}</Link>
       </section>
     </main>

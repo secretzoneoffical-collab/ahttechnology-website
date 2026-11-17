@@ -11,7 +11,7 @@ export default function ContactPage() {
           <nav className="nav-links" aria-label="Main navigation">
             <Link href="/services"><span data-locale="en">Services</span><span data-locale="ar">الخدمات</span></Link><Link href="/about"><span data-locale="en">About</span><span data-locale="ar">عن AHT</span></Link><Link href="/"><span data-locale="en">Home</span><span data-locale="ar">الرئيسية</span></Link>
           </nav>
-          <LanguageSwitcher />
+          <LanguageSwitcher /> <Link className="button-secondary" href="/login"><span data-locale="en">Client Portal</span><span data-locale="ar">بوابة العملاء</span></Link>
           <a className="nav-cta" href="https://bit.ly/m/AliHanySys" target="_blank" rel="noreferrer"><span data-locale="en">WhatsApp</span><span data-locale="ar">واتساب</span> ↗</a>
         </div>
       </header>

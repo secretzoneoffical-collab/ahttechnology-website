@@ -36,7 +36,7 @@ Only the Supabase publishable key belongs in browser-accessible environment vari
 
 ## Current implementation
 
-- Bilingual landing page content (English and Arabic)
+- Full English/Arabic language switcher shared across public pages, with persistent browser preference and localized navigation, home, about, services, and contact form
 - Service catalogue covering AHT's eight approved service groups
 - Public service inquiry form connected to Supabase PostgreSQL
 - Admin-only service request inbox at `/admin/requests` with status updates, internal notes, and last-contact timestamps

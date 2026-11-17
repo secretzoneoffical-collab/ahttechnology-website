@@ -287,3 +287,22 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .admin-user-access-form .button-primary { padding: 7px 10px; font-size: 11px; }
 .admin-readonly { color: var(--muted); font-size: 11px; }
 @media (max-width: 700px) { .admin-user-access-form { grid-template-columns: 1fr; min-width: 130px; } }
+
+/* Persistent bilingual website language switch */
+[data-site-locale="en"] [data-locale="ar"],
+[data-site-locale="ar"] [data-locale="en"] { display: none !important; }
+[data-site-locale="en"] [data-locale="en"] { direction: ltr; }
+[data-site-locale="ar"] [data-locale="ar"] { direction: rtl; }
+.language-switcher {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 78px; min-height: 40px; padding: 8px 13px;
+  border: 1px solid rgba(91,165,245,.32); border-radius: 10px;
+  background: rgba(37,136,245,.09); color: #8de4ee;
+  font: inherit; font-size: 13px; font-weight: 800; cursor: pointer;
+  white-space: nowrap; transition: background .2s ease, border-color .2s ease;
+}
+.language-switcher:hover { background: rgba(37,136,245,.18); border-color: var(--cyan); }
+[data-site-locale="ar"] .site-header .nav { direction: rtl; }
+[data-site-locale="en"] .site-header .nav { direction: ltr; }
+[data-site-locale="ar"] .nav-links { direction: rtl; }
+[data-site-locale="en"] .nav-links { direction: ltr; }

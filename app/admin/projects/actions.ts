@@ -171,3 +171,41 @@ export async function uploadProjectFile(formData: FormData) {
   revalidatePath("/admin/projects/" + projectId);
   revalidatePath("/dashboard");
 }
+
+
+export async function updateProjectStage(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const projectId = requiredText(formData.get("project_id"), 64);
+  const stageId = requiredText(formData.get("stage_id"), 64);
+  const status = String(formData.get("status") ?? "");
+  const progress = Number(formData.get("progress_percent"));
+  if (!["pending","in_progress","completed","blocked"].includes(status) || !Number.isInteger(progress) || progress < 0 || progress > 100) {
+    throw new Error("Invalid stage status or progress.");
+  }
+  const { error } = await supabase.from("project_stages").update({
+    status, progress_percent: progress,
+    completed_at: status === "completed" ? new Date().toISOString() : null,
+    updated_at: new Date().toISOString()
+  }).eq("id", stageId).eq("project_id", projectId);
+  if (error) throw new Error("Unable to update project stage.");
+  revalidatePath("/admin/projects/" + projectId);
+  revalidatePath("/dashboard");
+}
+
+export async function updateProjectTask(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const projectId = requiredText(formData.get("project_id"), 64);
+  const taskId = requiredText(formData.get("task_id"), 64);
+  const status = String(formData.get("status") ?? "");
+  const priority = String(formData.get("priority") ?? "");
+  if (!["todo","in_progress","blocked","done","cancelled"].includes(status) || !["low","normal","high","urgent"].includes(priority)) {
+    throw new Error("Invalid task status or priority.");
+  }
+  const { error } = await supabase.from("project_tasks").update({
+    status, priority, completed_at: status === "done" ? new Date().toISOString() : null,
+    updated_at: new Date().toISOString()
+  }).eq("id", taskId).eq("project_id", projectId);
+  if (error) throw new Error("Unable to update project task.");
+  revalidatePath("/admin/projects/" + projectId);
+  revalidatePath("/dashboard");
+}

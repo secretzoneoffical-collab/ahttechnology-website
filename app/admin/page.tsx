@@ -15,6 +15,15 @@ export default async function AdminDashboardPage() {
     .select("id", { count: "exact", head: true })
     .eq("status", "active");
 
+  const { count: serviceRequests } = await supabase
+    .from("service_requests")
+    .select("id", { count: "exact", head: true });
+
+  const { count: newRequests } = await supabase
+    .from("service_requests")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "new");
+
   const { count: adminUsers } = await supabase
     .from("profiles")
     .select("id", { count: "exact", head: true })
@@ -35,6 +44,7 @@ export default async function AdminDashboardPage() {
         <article className="admin-stat"><span>إجمالي الحسابات</span><strong>{countError ? "—" : totalUsers ?? 0}</strong></article>
         <article className="admin-stat"><span>الحسابات النشطة</span><strong>{activeUsers ?? 0}</strong></article>
         <article className="admin-stat"><span>حسابات الإدارة</span><strong>{adminUsers ?? 0}</strong></article>
+        <article className="admin-stat"><span>طلبات الخدمات</span><strong>{serviceRequests ?? 0}</strong><small>{newRequests ?? 0} طلب جديد</small></article>
       </section>
 
       <section className="admin-panel">
@@ -43,7 +53,7 @@ export default async function AdminDashboardPage() {
         </div>
         <div className="admin-shortcuts">
           <Link href="/admin/users"><strong>المستخدمون</strong><span>عرض حسابات العملاء والموظفين وأدوارهم.</span></Link>
-          <div><strong>طلبات العملاء</strong><span>قيد التطوير — سيتم ربطها بقاعدة البيانات.</span></div>
+          <Link href="/admin/requests"><strong>طلبات الخدمات</strong><span>عرض الطلبات الواردة ومعلومات التواصل وتفاصيل الاحتياج.</span></Link>
           <div><strong>إعدادات الموقع</strong><span>قيد التطوير — إعدادات المحتوى واللغات.</span></div>
         </div>
       </section>

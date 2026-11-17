@@ -95,3 +95,59 @@ The live catalog inspection returned the expected primary keys, profile-to-auth 
 6. Run CI and a fresh-environment migration test before declaring migration reproducibility complete.
 
 **Live database changes made during this audit:** None. All database queries in this audit were read-only.
+
+
+## Authentication configuration and flow review (2026-11-17)
+
+### Verified from repository code
+
+- There is no application sign-up or registration page in the `app/` route tree. The visible authentication routes are login, password recovery, password update, callback, and sign-out.
+- Login uses `signInWithPassword`; it does not create accounts.
+- Login and callback redirect handling reject values that do not start with a single slash and reject backslashes, preventing common protocol-relative and backslash-based open redirects.
+- Password recovery sends users to `/auth/callback?next=/update-password`.
+- The callback exchanges the PKCE code for a session before redirecting.
+- The update-password page asks for at least 8 characters in the browser. This is client-side validation only; the authoritative minimum and complexity rules must be configured in Supabase Auth.
+- The root proxy calls `getClaims()` immediately after creating the Supabase server client, following the current SSR session-refresh pattern.
+- Sign-out is a POST route and redirects to `/login`.
+
+### Verified from the live database
+
+- `auth.users` currently contains **0 users**. Therefore no real login, recovery, MFA enrollment, or admin bootstrap flow has yet been exercised against an actual account.
+- No verified MFA factors are currently present. This does not prove that MFA is disabled at the project configuration level.
+- An `AFTER INSERT` trigger named `on_auth_user_created` exists on `auth.users`.
+- The trigger calls `public.handle_new_auth_user()`, a SECURITY DEFINER function with an empty search_path. It creates a profile with fixed `role='customer'` and `status='active'`; user metadata is used only for full name and avatar. It does not promote new users to admin.
+
+### Configuration not exposed by the connected read-only project tools
+
+The available project/database tools do not expose the live Auth dashboard configuration for:
+- Allow-new-user-signups / invite-only mode
+- Email confirmation requirement and SMTP delivery configuration
+- Site URL and exact allowed redirect URL list
+- Minimum password length, complexity, and leaked-password protection
+- Session timeouts, refresh-token rotation, and inactivity limits
+- MFA enrollment policy and required assurance level
+- Auth rate limits and CAPTCHA/bot protection
+
+These settings must be checked in Supabase Dashboard under Authentication. They have **not** been changed by this audit.
+
+### Required manual dashboard verification before launch
+
+1. If AHT customer accounts are invite-only, disable public signups under Authentication > Providers > Email (confirm the exact current dashboard label).
+2. Set the production Site URL and allow only exact trusted callback URLs; retain localhost only for development. Avoid broad wildcards in production.
+3. Set minimum password length to at least 8 (prefer 12 or more where appropriate) and enable the strongest practical password rules. Enable leaked-password protection if the plan supports it.
+4. Require email confirmation if the account onboarding process depends on verified email delivery; test SMTP and recovery delivery.
+5. Review session lifetime, inactivity timeout, refresh-token rotation, and MFA policy. Consider requiring MFA for admin accounts.
+6. Review built-in Auth rate limits and enable CAPTCHA/anti-bot protection if public auth endpoints are exposed.
+
+### Remaining runtime tests
+
+After creating a controlled test account and confirming the intended signup policy:
+- Test valid and invalid login.
+- Test direct access to `/admin` and `/dashboard` while logged out.
+- Test active customer, inactive customer, staff, and admin access boundaries.
+- Test password recovery end-to-end, including expired/reused links.
+- Test sign-out and verify the old session no longer authorizes protected routes.
+- Test redirect inputs such as `//attacker.example`, `/\\\\attacker.example`, and external absolute URLs.
+- Test that a newly created auth user receives only a customer profile and cannot reach admin functionality.
+
+**Auth configuration changes made during this audit:** None. **Auth users created:** None. **Live database changes:** None.

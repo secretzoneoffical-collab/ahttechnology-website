@@ -23,7 +23,7 @@ export default async function AdminProjectDetailPage({ params }: { params: Promi
   return (
     <main className="admin-content">
       <div className="admin-page-heading"><div><Link className="auth-link" href="/admin/projects">← كل المشاريع</Link><span className="eyebrow">PROJECT DETAILS · {project.project_code}</span><h1>{project.name}</h1><p>{customer?.company_name || customer?.full_name || "عميل غير محدد"}</p></div><span className="admin-count">{project.progress_percent}% إنجاز</span></div>
-      <section className="admin-panel project-summary">
+      <section className="admin-panel project-summary">\n        <form action={updateProjectProgress} className="project-progress-form"><input type="hidden" name="project_id" value={id}/><label>حالة المشروع<select name="status" defaultValue={project.status}><option value="planned">مخطط</option><option value="active">قيد التنفيذ</option><option value="on_hold">متوقف مؤقتًا</option><option value="completed">مكتمل</option><option value="cancelled">ملغي</option></select></label><label>نسبة الإنجاز %<input name="progress_percent" type="number" min="0" max="100" defaultValue={project.progress_percent} required/></label><button className="button-primary" type="submit">حفظ التقدم</button></form>
         <div className="project-progress large"><span>{project.progress_percent}%</span><i><b style={{width: project.progress_percent + "%"}} /></i></div>
         <p>{project.description || "لا يوجد وصف للمشروع."}</p>
         <div className="project-meta"><span>الحالة: {project.status}</span><span>البداية: {project.start_date || "—"}</span><span>التسليم: {project.due_date || "—"}</span></div>

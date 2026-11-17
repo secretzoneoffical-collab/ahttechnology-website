@@ -22,11 +22,11 @@
 | 20261117164416 | validate_project_memberships | `supabase/migrations/20261117164416_validate_project_memberships.sql` |
 | 20261117164631 | restrict_staff_task_edits | `supabase/migrations/20261117164631_restrict_staff_task_edits.sql` |
 
-The first six versions were already applied before the project portal work but their SQL files are absent from the repository. Their exact historical SQL must not be invented from migration names. The first core tables and some functions also predate the tracked migration history, so the ledger alone is not a fresh-database bootstrap.
+The first six versions were already applied before the project portal work but their SQL files are absent from the repository. Their exact historical SQL must not be invented from migration names. The SQL body of the seventh legacy file (`secure_admin_profile_access`) also needs comparison with the original applied source. The first core tables and some functions predate the tracked migration history, so the ledger alone is not a fresh-database bootstrap.
 
 ## What has been reconciled
 
-- The final legacy admin-access migration file was renamed to match its live version `20261117153944`.
+- The final legacy admin-access file was renamed to use the live version `20261117153944`; its SQL body has not yet been proven byte-for-byte identical to the original applied migration.
 - All four project portal migration files were renamed to match the exact versions returned by the live Supabase migration ledger.
 - The project portal schema, RLS policies, triggers, and Storage policies were applied using Supabase's migration operation and are present in the live ledger.
 - No project data or Auth users were seeded.

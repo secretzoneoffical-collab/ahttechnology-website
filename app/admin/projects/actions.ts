@@ -139,13 +139,14 @@ export async function removeProjectStaff(formData: FormData) {
   const { supabase } = await requireAdmin();
   const projectId = requiredText(formData.get("project_id"), 64);
   const staffId = requiredText(formData.get("user_id"), 64);
+  const { error: taskError } = await supabase.from("project_tasks").update({ assigned_to: null, updated_at: new Date().toISOString() })
+    .eq("project_id", projectId).eq("assigned_to", staffId);
+  if (taskError) throw new Error("Unable to clear this staff member's task assignments.");
   const { error } = await supabase.from("project_team").delete().eq("project_id", projectId).eq("user_id", staffId);
   if (error) throw new Error("Unable to remove staff assignment.");
   revalidatePath("/admin/projects/" + projectId);
   revalidatePath("/dashboard");
 }
-
-
 export async function uploadProjectFile(formData: FormData) {
   const { supabase, user } = await requireAdmin();
   const projectId = requiredText(formData.get("project_id"), 64);

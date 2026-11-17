@@ -2,7 +2,7 @@
 
 **Project:** `mdvxbvaasspxqusrvfiq`
 **Checked:** 2026-11-17
-**Status:** Live migration ledger verified; five project-portal migrations are now tracked at their exact applied versions.
+**Status:** Live migration ledger verified; six project-portal migrations are now tracked at their exact applied versions.
 
 ## Applied versions currently present in Supabase
 
@@ -20,6 +20,7 @@
 | 20261117163133 | project_portal_policy_performance | `supabase/migrations/20261117163133_project_portal_policy_performance.sql` |
 | 20261117163157 | admin_only_project_storage_uploads | `supabase/migrations/20261117163157_admin_only_project_storage_uploads.sql` |
 | 20261117164416 | validate_project_memberships | `supabase/migrations/20261117164416_validate_project_memberships.sql` |
+| 20261117164631 | restrict_staff_task_edits | `supabase/migrations/20261117164631_restrict_staff_task_edits.sql` |
 
 The first six versions were already applied before the project portal work but their SQL files are absent from the repository. Their exact historical SQL must not be invented from migration names. The first core tables and some functions also predate the tracked migration history, so the ledger alone is not a fresh-database bootstrap.
 

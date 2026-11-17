@@ -50,7 +50,7 @@ export default async function AdminTeamPage() {
                 {staff.map((member) => (
                   <tr key={member.id}>
                     <td>{member.full_name || "بدون اسم"}</td>
-                    <td><span className={member.status === "active" ? "admin-status active" : "admin-status suspended"}>{member.status === "active" ? "نشط" : member.status === "pending" ? "بانتظار الموافقة" : "موقوف"}</span></td>
+                    <td><span className={`admin-status ${member.status === "active" ? "active" : member.status === "pending" ? "pending" : "suspended"}`}>{member.status === "active" ? "نشط" : member.status === "pending" ? "بانتظار الموافقة" : "موقوف"}</span></td>
                     <td>{new Intl.DateTimeFormat("ar-EG", { dateStyle: "medium" }).format(new Date(member.created_at))}</td>
                     <td><Link className="auth-link" href="/admin/users">تعديل الصلاحيات</Link></td>
                   </tr>

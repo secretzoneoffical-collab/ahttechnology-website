@@ -31,7 +31,7 @@ function LoginForm() {
     }
 
     const requestedNext = searchParams.get("next") || "/dashboard";
-    const safeNext = requestedNext.startsWith("/") && !requestedNext.startsWith("//")
+    const safeNext = requestedNext.startsWith("/") && !requestedNext.startsWith("//") && !requestedNext.includes("\\")
       ? requestedNext
       : "/dashboard";
     router.replace(safeNext);

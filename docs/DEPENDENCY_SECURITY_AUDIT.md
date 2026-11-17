@@ -22,7 +22,7 @@ The GitHub Actions run [44128703927](https://github.com/secretzoneoffical-collab
 - TypeScript: success
 - Next.js production build: success
 
-The audit step is configured to fail on high or critical advisories. This result does not claim that no low- or moderate-severity advisories exist.
+The full `npm audit` output reported **0 vulnerabilities** on this run. The CI audit step is configured to fail on high or critical advisories as an additional guard.
 
 ## Ongoing maintenance
 

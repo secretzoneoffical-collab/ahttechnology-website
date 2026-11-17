@@ -61,11 +61,11 @@ Use UUID primary keys, foreign keys, created/updated timestamps, constrained sta
 - SECURITY DEFINER helpers, if needed, must live in a non-exposed schema, pin an empty/controlled search_path, validate `auth.uid()`, and have explicit EXECUTE grants.
 - Storage downloads must use private bucket policies tied to the same project/customer mapping; never expose public object URLs for private project documents.
 
-## 5. Migration draft status
+## 5. Implemented application layer\n\nThe repository now includes an Admin project list/create page, project detail management for status/progress, stages, tasks, team assignment, updates, and private-file upload; a customer/staff dashboard; customer account linking on the CRM customer detail page; and a customer project detail page with visible milestones, tasks, updates, and signed document links. These pages depend on the migrations below and are not operational against the current live database until those migrations are safely installed.\n\n## 6. Migration draft status
 
-Repository migration draft: `supabase/migrations/20261117190000_create_project_management_foundation.sql` (commit `8c27bc49d84918185c09997df1e99912e154d6e8`). It defines the seven project/customer-link tables, indexes, private authorization helpers, grants, and RLS policies. It intentionally does not create a Storage bucket or Storage policies yet. The live Supabase database was queried after the commit and still has none of these seven tables; the migration has **not** been applied. This is deliberate because the repository still lacks six historical migration files from the live migration ledger. Review the draft and reconcile migration history before applying it.
+Repository migration drafts: `supabase/migrations/20261117190000_create_project_management_foundation.sql` (project/customer-link tables, indexes, private authorization helpers, grants, and RLS policies) and `supabase/migrations/20261117193000_private_project_file_storage.sql` (private bucket and Storage object policies). The live Supabase database was queried after the commit and still has none of these seven tables; the migration has **not** been applied. This is deliberate because the repository still lacks six historical migration files from the live migration ledger. Review the draft and reconcile migration history before applying it.
 
-## 6. Implementation sequence
+## 7. Implementation sequence
 
 1. **Data model and access design** — this document.
 2. **Database migration** — add the tables, constraints, indexes, RLS policies, and private Storage bucket/policies in a reviewed migration.
@@ -75,7 +75,7 @@ Repository migration draft: `supabase/migrations/20261117190000_create_project_m
 6. **Isolation tests** — two customers must never read each other's project data; unassigned staff and inactive accounts must be denied; verify Storage separately.
 7. **CI and fresh-database migration test** — do not claim deployability until migrations reproduce the schema on a clean environment.
 
-## 7. Safety and rollout constraints
+## 8. Safety and rollout constraints
 
 - This specification does not change the live Supabase database.
 - Do not create real customer accounts or test passwords in production during implementation.
@@ -84,7 +84,7 @@ Repository migration draft: `supabase/migrations/20261117190000_create_project_m
 - The current repository has an incomplete migration history (seven live ledger entries but only one tracked SQL migration). Resolve/reconcile that history before treating a full fresh-install migration chain as production-ready.
 - A project portal must not be described as operational until schema, UI, RLS, Storage policies, and cross-customer isolation tests all pass.
 
-## 8. Acceptance criteria
+## 9. Acceptance criteria
 
 - An active AHT admin can create a project for an existing CRM customer and assign staff.
 - A linked customer account can see that project after login.

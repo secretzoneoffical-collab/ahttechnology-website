@@ -32,7 +32,7 @@ export async function updateServiceRequest(formData: FormData) {
     .eq("id", user.id)
     .maybeSingle();
 
-  if (profileError || profile?.role !== "admin" || profile.status !== "active") {
+  if (profileError || !profile || profile.role !== "admin" || profile.status !== "active") {
     redirect("/dashboard");
   }
 

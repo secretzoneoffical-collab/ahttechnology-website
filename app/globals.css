@@ -228,3 +228,19 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .admin-table td a { color: #78d9e9; }
 .admin-stat small { color: var(--muted); font-size: 11px; }
 @media (max-width: 850px) { .contact-form-card { max-width: none; } }
+
+.admin-request-update { display: grid; gap: 8px; min-width: 190px; }
+.admin-request-update select, .admin-request-update textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: #081321;
+  color: white;
+  font: inherit;
+  font-size: 12px;
+}
+.admin-request-update textarea { resize: vertical; min-height: 52px; }
+.admin-request-update .button-primary { padding: 8px 12px; font-size: 12px; cursor: pointer; }
+.admin-request-update .button-primary:disabled { opacity: .6; cursor: wait; }
+.admin-table td { vertical-align: top; }

@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   validate:
@@ -21,12 +21,8 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Upgrade patched Next.js packages
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.actor != 'github-actions[bot]'
-        run: npm install --save-exact next@16.4.6 eslint-config-next@16.4.6
+      - name: Install locked dependencies
+        run: npm ci
 
       - name: Audit critical and high vulnerabilities
         run: npm audit --audit-level=high
@@ -42,16 +38,3 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_build_placeholder
-
-      - name: Commit patched dependency lockfile
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.actor != 'github-actions[bot]'
-        run: |
-          if git diff --quiet -- package.json package-lock.json; then
-            echo "No dependency lockfile changes to commit."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package.json package-lock.json
-          git commit -m "chore: patch Next.js security updates"
-          git push

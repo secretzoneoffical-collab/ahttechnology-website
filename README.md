@@ -55,12 +55,12 @@ Only the Supabase publishable key belongs in browser-accessible environment vari
 - The Supabase `public.profiles` table and its row-level security policies are provisioned in the connected project.
 - The Supabase `public.service_requests` table accepts only the contact fields needed for a new website inquiry; public reads are blocked, while active admins can review, update, and link requests to customer records.
 - The Supabase `public.customers` table is admin-only under RLS, with unique normalized email addresses to reduce duplicate customer profiles.
-- The service request table uses RLS, column-level insert grants, input length constraints, and admin-only read/update policies.
+- The service request table uses RLS, column-level insert grants, input length constraints, and admin-only read/update policies.\n- Project records use RLS across seven project tables. Customer visibility is enforced by database policies, not only by UI filtering.\n- Project documents are stored in a private Storage bucket (`aht-project-files`) with short-lived signed download URLs. Storage writes/deletes are currently Admin-only.
 - Configure the Supabase Auth Site URL and allowed redirect URLs for the eventual deployment origin before testing password recovery.
 - Public self-registration is intentionally not implemented.
 - No administrator account is created by this repository.
 - GitHub Actions runs ESLint, TypeScript, and production build checks on pushes and pull requests to `main`.
-- Run `npm run typecheck`, `npm run lint`, and `npm run build` locally before release.
+- The live Supabase project has the Project Management schema, RLS, private Storage, and policy hardening applied. See [the project implementation specification](docs/PROJECT_MANAGEMENT_SPEC.md).\n- Six legacy migration files are still missing from the repository; see [migration recovery notes](docs/LEGACY_MIGRATION_RECOVERY.md). This is a fresh-install reproducibility gap, not a missing schema on the live project.\n- Cross-customer isolation tests still require controlled test identities in a non-production environment.\n- Run `npm run typecheck`, `npm run lint`, and `npm run build` locally before release.
 
 
 ## First administrator setup

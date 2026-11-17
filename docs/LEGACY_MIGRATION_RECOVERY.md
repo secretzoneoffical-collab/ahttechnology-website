@@ -27,7 +27,7 @@ The first six versions were already applied before the project portal work but t
 ## What has been reconciled
 
 - The final legacy admin-access file was renamed to use the live version `20261117153944`; its SQL body has not yet been proven byte-for-byte identical to the original applied migration.
-- All four project portal migration files were renamed to match the exact versions returned by the live Supabase migration ledger.
+- All six project portal migration files were renamed to match the exact versions returned by the live Supabase migration ledger.
 - The project portal schema, RLS policies, triggers, and Storage policies were applied using Supabase's migration operation and are present in the live ledger.
 - No project data or Auth users were seeded.
 - No Vercel deployment or configuration was performed.

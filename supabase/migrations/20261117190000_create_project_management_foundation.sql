@@ -316,15 +316,9 @@ using (
   or (customer_visible and private.is_linked_project_customer(project_id))
 );
 
-create policy project_tasks_staff_insert on public.project_tasks
+create policy project_tasks_admin_insert on public.project_tasks
 for insert to authenticated
-with check (
-  private.is_admin()
-  or (
-    private.is_assigned_project_staff(project_id)
-    and created_by = auth.uid()
-  )
-);
+with check (private.is_admin());
 
 create policy project_tasks_staff_update on public.project_tasks
 for update to authenticated
@@ -348,6 +342,7 @@ for insert to authenticated
 with check (
   (private.is_admin() or private.is_assigned_project_staff(project_id))
   and author_id = auth.uid()
+  and customer_visible = false
 );
 
 create policy project_updates_admin_update on public.project_updates
@@ -367,12 +362,9 @@ using (
   or (customer_visible and private.is_linked_project_customer(project_id))
 );
 
-create policy project_files_staff_insert on public.project_files
+create policy project_files_admin_insert on public.project_files
 for insert to authenticated
-with check (
-  (private.is_admin() or private.is_assigned_project_staff(project_id))
-  and uploaded_by = auth.uid()
-);
+with check (private.is_admin() and uploaded_by = auth.uid());
 
 create policy project_files_admin_update on public.project_files
 for update to authenticated

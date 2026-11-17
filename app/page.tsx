@@ -16,10 +16,10 @@ export default function HomePage() {
     <main>
       <header className="site-header">
         <div className="container nav">
-          <a className="brand" href="/" aria-label="AHT home">
+          <Link className="brand" href="/" aria-label="AHT home">
             <span className="brand-mark">AHT</span>
             <span>ALI HANY TECHNOLOGY</span>
-          </a>
+          </Link>
           <nav className="nav-links" aria-label="Main navigation">
             <Link href="/services"><span data-locale="en">Services</span><span data-locale="ar">الخدمات</span></Link>
             <Link href="/about"><span data-locale="en">About</span><span data-locale="ar">عن AHT</span></Link>

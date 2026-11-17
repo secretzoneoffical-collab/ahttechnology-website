@@ -16,7 +16,7 @@ export default async function DashboardPage() {
     .eq("id", data.claims.sub)
     .maybeSingle();
 
-  if (profile?.status === "suspended") {
+  if (!profile) {\n    redirect("/login?message=account-unavailable");\n  }\n\n  if (profile.status === "suspended") {
     return (
       <main className="auth-page" dir="rtl">
         <section className="auth-card">

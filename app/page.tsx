@@ -46,7 +46,7 @@ export default function HomePage() {
             <a href="#contact">Contact</a>
             <a href="#arabic" lang="ar" dir="rtl">العربية</a>
           </nav>
-          <a className="nav-cta" href="#contact">Let’s Talk <span aria-hidden="true">↗</span></a>
+          <div className="hero-actions" style={{ marginTop: 0 }}><a className="button-secondary" href="/login">Client Portal</a><a className="nav-cta" href="#contact">Let’s Talk <span aria-hidden="true">↗</span></a></div>
         </div>
       </header>
 

@@ -213,10 +213,40 @@ export async function updateProjectTask(formData: FormData) {
     throw new Error("Invalid task status or priority.");
   }
   const { error } = await supabase.from("project_tasks").update({
-    status, priority, assigned_to: assignedTo, completed_at: status === "done" ? new Date().toISOString() : null,
+    status, priority, assigned_to: assignedTo, customer_visible: customerVisible, completed_at: status === "done" ? new Date().toISOString() : null,
     updated_at: new Date().toISOString()
   }).eq("id", taskId).eq("project_id", projectId);
   if (error) throw new Error("Unable to update project task.");
   revalidatePath("/admin/projects/" + projectId);
   revalidatePath("/dashboard");
+}
+
+export async function updateProjectDetails(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const projectId = requiredText(formData.get("project_id"), 64);
+  const name = requiredText(formData.get("name"), 160);
+  const description = String(formData.get("description") ?? "").trim().slice(0, 5000);
+  const startDate = String(formData.get("start_date") ?? "").trim() || null;
+  const dueDate = String(formData.get("due_date") ?? "").trim() || null;
+  if (startDate && dueDate && dueDate < startDate) throw new Error("Due date must be after start date.");
+  const { error } = await supabase.from("projects").update({
+    name, description: description || null, start_date: startDate, due_date: dueDate,
+    updated_at: new Date().toISOString()
+  }).eq("id", projectId);
+  if (error) throw new Error("Unable to update project details.");
+  revalidatePath("/admin/projects");
+  revalidatePath("/admin/projects/" + projectId);
+  revalidatePath("/dashboard");
+}
+
+export async function updateProjectFileVisibility(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const projectId = requiredText(formData.get("project_id"), 64);
+  const fileId = requiredText(formData.get("file_id"), 64);
+  const customerVisible = formData.get("customer_visible") === "on";
+  const { error } = await supabase.from("project_files").update({ customer_visible: customerVisible })
+    .eq("id", fileId).eq("project_id", projectId);
+  if (error) throw new Error("Unable to update file visibility.");
+  revalidatePath("/admin/projects/" + projectId);
+  revalidatePath("/dashboard/projects/" + projectId);
 }

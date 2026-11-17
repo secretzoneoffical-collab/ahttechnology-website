@@ -12,7 +12,7 @@ export async function updateUserAccess(formData: FormData) {
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId)) {
     throw new Error("Invalid user identifier.");
   }
-  if (!["customer", "staff"].includes(role) || !["active", "suspended"].includes(status)) {
+  if (!["customer", "staff"].includes(role) || !["active", "pending", "suspended"].includes(status) || (status === "pending" && role !== "staff")) {
     throw new Error("Invalid role or account status.");
   }
 

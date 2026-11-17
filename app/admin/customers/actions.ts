@@ -111,3 +111,34 @@ export async function updateCustomer(formData: FormData) {
   revalidatePath("/admin/customers/" + customerId);
   redirect("/admin/customers/" + customerId + "?updated=1");
 }
+
+
+export async function linkCustomerAccount(formData: FormData) {
+  const customerId = String(formData.get("customer_id") ?? "");
+  const userId = String(formData.get("user_id") ?? "");
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuid.test(customerId) || !uuid.test(userId)) throw new Error("Invalid customer or user identifier.");
+  const supabase = await requireActiveAdmin();
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("id, role, status").eq("id", userId).maybeSingle();
+  if (profileError || !profile || profile.role !== "customer" || profile.status !== "active") {
+    throw new Error("Only active customer accounts can be linked.");
+  }
+  const { error } = await supabase.from("customer_users").insert({ customer_id: customerId, user_id: userId });
+  if (error) throw new Error("Unable to link account. It may already be linked to another customer.");
+  revalidatePath("/admin/customers/" + customerId);
+  revalidatePath("/dashboard");
+  redirect("/admin/customers/" + customerId + "?linked=1");
+}
+
+export async function unlinkCustomerAccount(formData: FormData) {
+  const customerId = String(formData.get("customer_id") ?? "");
+  const userId = String(formData.get("user_id") ?? "");
+  const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuid.test(customerId) || !uuid.test(userId)) throw new Error("Invalid customer or user identifier.");
+  const supabase = await requireActiveAdmin();
+  const { error } = await supabase.from("customer_users").delete().eq("customer_id", customerId).eq("user_id", userId);
+  if (error) throw new Error("Unable to unlink customer account.");
+  revalidatePath("/admin/customers/" + customerId);
+  revalidatePath("/dashboard");
+  redirect("/admin/customers/" + customerId + "?unlinked=1");
+}

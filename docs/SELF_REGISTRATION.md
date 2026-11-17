@@ -38,6 +38,7 @@ The connected project tools do not expose the live Auth provider confirmation/SM
 - `20261117175030_customer_staff_self_registration.sql`: introduces the pending status and server-enforced account type.
 - `20261117181554_customer_signup_crm_link.sql`: creates CRM customer records and portal links for customer signups.
 - `20261117181700_profile_contact_details_for_staff_approval.sql`: stores email/phone on profiles, backfills existing Auth users, and syncs email changes.
+- `20261117181955_protect_profile_contact_fields.sql`: prevents users from spoofing their own email/phone in the profile table.
 
 The three migrations are applied to the live Supabase project. Their tracked filenames match the current migration ledger.
 

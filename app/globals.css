@@ -244,3 +244,36 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .admin-request-update .button-primary { padding: 8px 12px; font-size: 12px; cursor: pointer; }
 .admin-request-update .button-primary:disabled { opacity: .6; cursor: wait; }
 .admin-table td { vertical-align: top; }
+
+.admin-text-button {
+  display: inline-flex;
+  margin-top: 7px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #78d9e9;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+.admin-customer-link { display: inline-block; margin-top: 7px; font-size: 11px; }
+.customer-detail-grid { display: grid; grid-template-columns: minmax(280px, .85fr) minmax(0, 1.15fr); gap: 16px; align-items: start; }
+.customer-info { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; margin: 0 0 22px; }
+.customer-info div { min-width: 0; padding: 12px; border: 1px solid var(--line); border-radius: 9px; }
+.customer-info dt { color: var(--muted); font-size: 11px; margin-bottom: 7px; }
+.customer-info dd { color: #e5edf6; font-size: 13px; overflow-wrap: anywhere; margin: 0; }
+.admin-customer-form { display: grid; gap: 9px; }
+.admin-customer-form label { color: #cbd8e7; font-size: 12px; }
+.admin-customer-form select, .admin-customer-form textarea {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--line);
+  border-radius: 8px; background: #081321; color: white; font: inherit; font-size: 13px;
+}
+.admin-customer-form textarea { resize: vertical; }
+.customer-request-list { display: grid; gap: 12px; }
+.customer-request-list article { padding: 15px; border: 1px solid var(--line); border-radius: 10px; }
+.customer-request-list article > div { display: flex; justify-content: space-between; gap: 12px; color: #e8f0f8; font-size: 13px; }
+.customer-request-list article > div span, .customer-request-list small { color: var(--muted); font-size: 11px; }
+.customer-request-list p { color: #c3d0de; font-size: 12px; line-height: 1.8; white-space: pre-wrap; }
+.customer-request-list small { display: block; }
+@media (max-width: 850px) { .customer-detail-grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .customer-info { grid-template-columns: 1fr; } }

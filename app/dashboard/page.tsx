@@ -12,7 +12,7 @@ export default async function DashboardPage() {
   if (error || !data?.claims?.sub) redirect("/login?next=/dashboard");
   const { data: profile } = await supabase.from("profiles").select("id, full_name, role, status").eq("id", data.claims.sub).maybeSingle();
   if (!profile) redirect("/login?message=account-unavailable");
-  if (profile.status !== "active") return <main className="auth-page" dir="rtl"><section className="auth-card"><h1>الحساب غير نشط</h1><p className="auth-muted">لا يمكن الوصول إلى بوابة AHT بهذا الحساب حاليًا. يرجى التواصل مع فريق AHT للمساعدة.</p></section></main>;
+  if (profile.status !== "active") return <main className="auth-page" dir="rtl"><section className="auth-card"><h1>{profile.status === "pending" && profile.role === "staff" ? "طلب انضمامك قيد المراجعة" : "الحساب غير نشط"}</h1><p className="auth-muted">{profile.status === "pending" && profile.role === "staff" ? "استلمت AHT طلب انضمامك. سيتم تفعيل حساب الموظف بعد مراجعة الإدارة والموافقة عليه. لن تتمكن من الوصول إلى المشاريع أو بيانات الفريق قبل التفعيل." : "لا يمكن الوصول إلى بوابة AHT بهذا الحساب حاليًا. يرجى التواصل مع فريق AHT للمساعدة."}</p><form action="/auth/signout" method="post"><button className="button-secondary" type="submit">تسجيل الخروج</button></form></section></main>;
 
   let visibleProjects: {id:string;project_code:string;name:string;status:string;progress_percent:number;due_date:string|null}[] = [];
   let loadError = false;

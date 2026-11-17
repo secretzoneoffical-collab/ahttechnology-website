@@ -203,3 +203,28 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .admin-page-heading h1 { font-size: 29px; }
   .admin-nav { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
+
+
+/* Service request form and inbox */
+.auth-form select, .auth-form textarea {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  outline: none;
+  background: #081321;
+  color: white;
+  font: inherit;
+}
+.auth-form select:focus, .auth-form textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37,136,245,.12);
+}
+.auth-form textarea { resize: vertical; min-height: 120px; }
+.contact-form-card { width: 100%; max-width: 560px; }
+.contact-request-form { margin-top: 0; }
+.admin-cell-sub { display: block; margin-top: 5px; color: var(--muted); font-size: 11px; }
+.admin-message-cell { min-width: 220px; max-width: 320px; white-space: normal; line-height: 1.7; }
+.admin-table td a { color: #78d9e9; }
+.admin-stat small { color: var(--muted); font-size: 11px; }
+@media (max-width: 850px) { .contact-form-card { max-width: none; } }

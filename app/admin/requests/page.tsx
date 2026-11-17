@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/require-admin";
+import { createCustomerFromRequest } from "../customers/actions";
 import { updateServiceRequest } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +18,7 @@ export default async function AdminRequestsPage({ searchParams }: { searchParams
   const { supabase } = await requireAdmin();
   const { data: requests, error } = await supabase
     .from("service_requests")
-    .select("id, full_name, email, phone, company, service_type, message, status, admin_notes, last_contacted_at, created_at")
+    .select("id, full_name, email, phone, company, service_type, message, status, admin_notes, last_contacted_at, customer_id, created_at")
     .order("created_at", { ascending: false })
     .limit(100);
 
@@ -46,7 +48,7 @@ export default async function AdminRequestsPage({ searchParams }: { searchParams
               <tbody>
                 {requests.map((request) => (
                   <tr key={request.id}>
-                    <td>{request.full_name}<small className="admin-cell-sub">{request.company || "فرد"}</small></td>
+                    <td>{request.full_name}<small className="admin-cell-sub">{request.company || "فرد"}</small>{request.customer_id ? <Link className="auth-link admin-customer-link" href={`/admin/customers/${request.customer_id}`}>ملف العميل</Link> : <form action={createCustomerFromRequest}><input type="hidden" name="request_id" value={request.id} /><button className="admin-text-button" type="submit">إنشاء ملف عميل</button></form>}</td>
                     <td><a href={`mailto:${request.email}`}>{request.email}</a><small className="admin-cell-sub" dir="ltr">{request.phone}</small></td>
                     <td>{request.service_type}</td>
                     <td>

@@ -25,7 +25,7 @@ The update action verifies the current user through the server-side `requireAdmi
 - Project detail pages independently require an active profile.
 - Staff project access remains limited to assigned projects and tasks.
 - Customer project access remains limited to the CRM customer record linked through `customer_users` and customer-visible project data.
-- A database trigger prevents users from changing their own profile role or status.
+- Database triggers prevent users from changing their own profile role, status, email, or phone directly. Auth email changes are synchronized from `auth.users` by a separate server-side trigger.
 
 ## Email confirmation
 

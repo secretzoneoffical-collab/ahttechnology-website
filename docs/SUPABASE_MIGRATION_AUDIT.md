@@ -1,4 +1,4 @@
-# Supabase Migration & Schema Audit
+# Supabase Migration & Schema Audit\n\n> **Historical snapshot note:** Sections below document the initial audit before Project Management was added. See the follow-up at the end for the current live schema and migration state.
 
 **Project:** `mdvxbvaasspxqusrvfiq`  
 **Repository branch checked:** `main`  
@@ -11,7 +11,7 @@ The Supabase migration ledger contains seven applied migration records, while th
 
 The tracked file is:
 
-- `20261117173800_secure_admin_profile_access.sql`
+- `20261117153944_secure_admin_profile_access.sql`
 
 The latest ledger record is:
 
@@ -151,3 +151,37 @@ After creating a controlled test account and confirming the intended signup poli
 - Test that a newly created auth user receives only a customer profile and cannot reach admin functionality.
 
 **Auth configuration changes made during this audit:** None. **Auth users created:** None. **Live database changes:** None.
+
+
+## Follow-up: Project Portal applied to live Supabase (2026-11-17)
+
+The four project-portal migrations have since been applied successfully to the live Supabase project. Current ledger entries now include:
+
+- `20261117163107_create_project_management_foundation`
+- `20261117163111_private_project_file_storage`
+- `20261117163133_project_portal_policy_performance`
+- `20261117163157_admin_only_project_storage_uploads`
+
+The following seven tables are now present in `public`, all with RLS enabled:
+`customer_users`, `projects`, `project_team`, `project_stages`, `project_tasks`, `project_updates`, and `project_files`.
+
+The private Storage bucket `aht-project-files` is present with a 15 MiB file limit and an allowlist for PDF, JPEG, PNG, WebP, TXT, DOCX, and XLSX. The bucket is not public. Object writes and deletes are restricted to active admins. Reads require a matching project-file metadata row and project-level authorization.
+
+Additional authorization hardening:
+- Staff can read only projects assigned to them.
+- Staff task updates are restricted to tasks assigned to their own user ID.
+- Database triggers prevent staff from changing task project ownership, assignee, customer visibility, or creator, and prevent a task from referencing a stage belonging to another project.
+- Customer access is mapped through `customer_users` and customer-visible flags.
+- Customer accounts cannot read the project team roster.
+- Task creation and project-file metadata creation are admin-only. Staff-created project updates must remain internal.
+
+Verification after application:
+- All seven project portal tables report RLS enabled.
+- Anonymous role has no table SELECT privileges on projects, tasks, or files and cannot execute project authorization helpers.
+- Authenticated role has EXECUTE on the authorization helper.
+- Supabase Security Advisor returned zero findings.
+- Performance Advisor no longer reports missing FK indexes, repeated auth-initplan evaluation, or multiple permissive policies. Remaining unused-index notices are informational and expected while the new project tables are empty.
+
+No Auth users or project records were created during this implementation. Therefore cross-customer runtime isolation still requires controlled test identities in a non-production environment.
+
+The first six legacy migration SQL files remain missing from GitHub. The current ledger-to-file alignment and recovery plan are documented in `docs/LEGACY_MIGRATION_RECOVERY.md`. The project portal migrations are tracked using their exact live version numbers.

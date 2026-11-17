@@ -29,7 +29,7 @@ Use two projects:
 | Staff A | Read Project A and its internal work records | Allowed |
 | Staff A | Update a task assigned to Staff A | Allowed |
 | Staff A | Update a task assigned to Staff B or unassigned | Denied |
-| Staff A | Change task assignee, project, creator, or customer-visible flag | Denied by trigger |
+| Staff A | Change task title, description, stage, priority, due date, assignee, project, creator, or customer-visible flag | Denied by trigger |
 | Staff A | Create an internal project update | Allowed |
 | Staff A | Create a customer-visible update | Denied |
 | Staff A | Read Project B | Denied |

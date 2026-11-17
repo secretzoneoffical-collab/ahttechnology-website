@@ -67,6 +67,7 @@ export default async function AdminDashboardPage() {
           <Link href="/admin/team"><strong>فريق العمل</strong><span>عرض حسابات الموظفين النشطة والموقوفة.</span></Link>
           <Link href="/admin/requests"><strong>طلبات الخدمات</strong><span>عرض الطلبات الواردة ومعلومات التواصل وتفاصيل الاحتياج.</span></Link>
           <Link href="/admin/customers"><strong>إدارة العملاء</strong><span>ملفات العملاء وتصنيفهم وملاحظاتهم وسجل طلباتهم.</span></Link>
+          <Link href="/admin/projects"><strong>إدارة المشاريع</strong><span>إنشاء المشاريع ومتابعة المراحل والمهام والتحديثات.</span></Link>
           <div><strong>إعدادات الموقع</strong><span>قيد التطوير — إعدادات المحتوى واللغات.</span></div>
         </div>
       </section>

@@ -65,7 +65,7 @@ Only the Supabase publishable key belongs in browser-accessible environment vari
 - Project documents are stored in a private Storage bucket (`aht-project-files`) with short-lived signed download URLs. Storage writes/deletes are currently Admin-only.
 - Configure the Supabase Auth Site URL and allowed redirect URLs for the eventual deployment origin before testing password recovery.
 - Public self-registration uses the `account_type` Auth metadata field, but database-side trigger logic only accepts `customer` or `staff`; Admin cannot be self-selected.
-- New customer profiles are active automatically and receive a new CRM customer record plus a `customer_users` link during Auth user creation. Customer signup requires a phone number because the CRM customer record requires one. New staff profiles are created as `pending` and cannot access the staff workspace until an Admin activates them from `/admin/users`.
+- New customer profiles are active automatically and receive a new CRM customer record plus a `customer_users` link during Auth user creation. Customer signup requires a phone number because the CRM customer record requires one. New staff profiles are created as `pending` and cannot access the staff workspace until an Admin activates them from `/admin/users`. The admin user and team screens show applicant email and phone details.
 - Self-registration never links a user to an existing CRM customer by email alone; it creates a separate prospect record, which Admin can review and merge/associate operationally if needed.
 - No administrator account is created by this repository.
 - GitHub Actions runs ESLint, TypeScript, and production build checks on pushes and pull requests to `main`.

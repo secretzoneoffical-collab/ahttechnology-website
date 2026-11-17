@@ -1,6 +1,6 @@
 # AHT Project Management & Customer Portal — Implementation Specification
 
-**Status:** Approved technical direction; initial schema/RLS migration drafted in GitHub, not applied to Supabase. UI is not implemented yet.  
+**Status:** Project schema, RLS, private Storage, and policy/index hardening are applied to the live Supabase project. Admin, staff, and customer project pages are implemented in GitHub; end-to-end identity-based isolation tests remain pending.  
 **Repository:** `secretzoneoffical-collab/ahttechnology-website`  
 **Supabase project:** `mdvxbvaasspxqusrvfiq`  
 **Scope:** Internal AHT project operations and isolated customer self-service portal.
@@ -12,7 +12,7 @@ The live public schema currently contains only:
 - `customers`: CRM customer/company record; it has no Auth user mapping.
 - `service_requests`: Website inquiries, optionally linked to a CRM customer.
 
-All three tables have RLS enabled. There are no project, task, project-update, or customer-account-link tables in the inspected schema. The live `auth.users` table currently has zero users. Therefore the existing Customer Dashboard is an authenticated placeholder, not yet a project portal.
+All three core tables have RLS enabled. The project implementation now adds `customer_users`, `projects`, `project_team`, `project_stages`, `project_tasks`, `project_updates`, and `project_files`, all with RLS enabled. The live `auth.users` table had zero users at the time of the initial audit; no production test users have been created.
 
 ## 2. Product behavior
 
@@ -61,7 +61,7 @@ Use UUID primary keys, foreign keys, created/updated timestamps, constrained sta
 - SECURITY DEFINER helpers, if needed, must live in a non-exposed schema, pin an empty/controlled search_path, validate `auth.uid()`, and have explicit EXECUTE grants.
 - Storage downloads must use private bucket policies tied to the same project/customer mapping; never expose public object URLs for private project documents.
 
-## 5. Implemented application layer\n\nThe repository now includes an Admin project list/create page, project detail management for status/progress, stages, tasks, team assignment, updates, and private-file upload; a customer/staff dashboard; customer account linking on the CRM customer detail page; and a customer project detail page with visible milestones, tasks, updates, and signed document links. These pages depend on the migrations below and are not operational against the current live database until those migrations are safely installed.\n\n## 6. Migration draft status
+## 5. Implemented application layer\n\nThe repository now includes an Admin project list/create page, project detail management for status/progress, stages, tasks, team assignment, updates, and private-file upload; a customer/staff dashboard; customer account linking on the CRM customer detail page; and a customer project detail page with visible milestones, tasks, updates, and signed document links. These pages depend on the live project schema and use Supabase RLS for access control. Their end-to-end behavior still requires authenticated admin, staff, and customer test accounts.\n\n## 6. Migration draft status
 
 Repository migration drafts: `supabase/migrations/20261117190000_create_project_management_foundation.sql` (project/customer-link tables, indexes, private authorization helpers, grants, and RLS policies) and `supabase/migrations/20261117193000_private_project_file_storage.sql` (private bucket and Storage object policies). The live Supabase database was queried after the commit and still has none of these seven tables; the migration has **not** been applied. This is deliberate because the repository still lacks six historical migration files from the live migration ledger. Review the draft and reconcile migration history before applying it.
 
@@ -77,11 +77,11 @@ Repository migration drafts: `supabase/migrations/20261117190000_create_project_
 
 ## 8. Safety and rollout constraints
 
-- This specification does not change the live Supabase database.
+- The project management migrations have been applied to the live Supabase database; future DDL changes must be added as versioned migrations.
 - Do not create real customer accounts or test passwords in production during implementation.
 - Do not enable public sign-up to support customer onboarding.
 - Do not use Vercel during this development phase; finish repository work and CI first.
-- The current repository has an incomplete migration history (seven live ledger entries but only one tracked SQL migration). Resolve/reconcile that history before treating a full fresh-install migration chain as production-ready.
+- The seven legacy migration files are not all present in GitHub; recover the original SQL or create a separately reviewed baseline before claiming fresh-install reproducibility.
 - A project portal must not be described as operational until schema, UI, RLS, Storage policies, and cross-customer isolation tests all pass.
 
 ## 9. Acceptance criteria

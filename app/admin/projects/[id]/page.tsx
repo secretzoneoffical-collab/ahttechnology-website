@@ -1,18 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { createProjectTask, createProjectUpdate, createProjectStage, updateProjectProgress, assignProjectStaff, removeProjectStaff } from "../actions";
+import { createProjectTask, createProjectUpdate, createProjectStage, updateProjectProgress, assignProjectStaff, removeProjectStaff, uploadProjectFile } from "../actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { supabase } = await requireAdmin();
-  const [{ data: project, error }, { data: tasks }, { data: updates }, { data: stages }, { data: team }, { data: staffOptions }] = await Promise.all([
+  const [{ data: project, error }, { data: tasks }, { data: updates }, { data: stages }, { data: team }, { data: staffOptions }, { data: files }] = await Promise.all([
     supabase.from("projects").select("id, project_code, name, description, status, progress_percent, start_date, due_date, customers(full_name, company_name)").eq("id", id).maybeSingle(),
     supabase.from("project_tasks").select("id, title, description, status, priority, due_date, customer_visible").eq("project_id", id).order("created_at", { ascending: false }),
     supabase.from("project_updates").select("id, title, body, customer_visible, created_at").eq("project_id", id).order("created_at", { ascending: false }),
-    supabase.from("project_stages").select("id, name, status, progress_percent, sort_order").eq("project_id", id).order("sort_order"),\n    supabase.from("project_team").select("user_id").eq("project_id", id),\n    supabase.from("profiles").select("id, full_name").eq("role", "staff").eq("status", "active").order("full_name")
+    supabase.from("project_stages").select("id, name, status, progress_percent, sort_order").eq("project_id", id).order("sort_order"),\n    supabase.from("project_team").select("user_id").eq("project_id", id),\n    supabase.from("profiles").select("id, full_name").eq("role", "staff").eq("status", "active").order("full_name"),\n    supabase.from("project_files").select("id, file_name, storage_path, customer_visible, created_at").eq("project_id", id).order("created_at", {ascending:false})
   ]);
   if (error || !project) notFound();
   const customer = Array.isArray(project.customers) ? project.customers[0] : project.customers;
@@ -50,7 +50,7 @@ export default async function AdminProjectDetailPage({ params }: { params: Promi
           <div className="project-record-list">{updates?.map(u => <article key={u.id}><strong>{u.title}</strong><span>{new Intl.DateTimeFormat("ar-EG", {dateStyle:"medium",timeStyle:"short"}).format(new Date(u.created_at))} · {u.customer_visible ? "مرئي للعميل" : "داخلي"}</span><p>{u.body}</p></article>)}{!updates?.length && <p className="admin-note">لا توجد تحديثات.</p>}</div>
         </section>
       </div>
-      <section className="admin-panel"><div className="admin-panel-heading"><h2>مراحل المشروع</h2><p>إضافة مراحل التنفيذ وترتيبها وتحديد ظهورها للعميل.</p></div><form action={createProjectStage} className="project-create-form"><input type="hidden" name="project_id" value={id} /><label>اسم المرحلة<input name="name" required maxLength={160} /></label><label>الوصف<textarea name="description" rows={2} maxLength={2000} /></label><label>الترتيب<input name="sort_order" type="number" min="0" defaultValue="0" /></label><label className="project-check"><input type="checkbox" name="customer_visible" defaultChecked /> ظاهرة للعميل</label><button className="button-primary" type="submit">إضافة مرحلة</button></form>{stages?.length ? <div className="project-record-list">{stages.map(s=><article key={s.id}><strong>{s.name}</strong><span>{s.status} · {s.progress_percent}%</span></article>)}</div> : <p className="admin-note">لم تتم إضافة مراحل بعد.</p>}</section>
+      <section className="admin-panel project-files-panel"><div className="admin-panel-heading"><h2>ملفات المشروع</h2><p>ارفع مستندات المشروع إلى مساحة تخزين خاصة.</p></div><form action={uploadProjectFile} className="project-create-form" encType="multipart/form-data"><input type="hidden" name="project_id" value={id}/><label>اختيار الملف<input type="file" name="file" required accept=".pdf,.jpg,.jpeg,.png,.webp,.txt,.docx,.xlsx"/></label><label className="project-check"><input type="checkbox" name="customer_visible"/> متاح للعميل</label><button className="button-primary" type="submit">رفع الملف</button><p className="admin-note">الحد الأقصى 15 MB. الأنواع: PDF، الصور، TXT، DOCX، XLSX.</p></form><div className="project-record-list">{files?.map(f=><article key={f.id}><strong>{f.file_name}</strong><span>{f.customer_visible ? "ظاهر للعميل" : "داخلي"} · {new Intl.DateTimeFormat("ar-EG",{dateStyle:"medium"}).format(new Date(f.created_at))}</span></article>)}{!files?.length && <p className="admin-note">لا توجد ملفات مرفوعة.</p>}</div></section>\n      <section className="admin-panel"><div className="admin-panel-heading"><h2>مراحل المشروع</h2><p>إضافة مراحل التنفيذ وترتيبها وتحديد ظهورها للعميل.</p></div><form action={createProjectStage} className="project-create-form"><input type="hidden" name="project_id" value={id} /><label>اسم المرحلة<input name="name" required maxLength={160} /></label><label>الوصف<textarea name="description" rows={2} maxLength={2000} /></label><label>الترتيب<input name="sort_order" type="number" min="0" defaultValue="0" /></label><label className="project-check"><input type="checkbox" name="customer_visible" defaultChecked /> ظاهرة للعميل</label><button className="button-primary" type="submit">إضافة مرحلة</button></form>{stages?.length ? <div className="project-record-list">{stages.map(s=><article key={s.id}><strong>{s.name}</strong><span>{s.status} · {s.progress_percent}%</span></article>)}</div> : <p className="admin-note">لم تتم إضافة مراحل بعد.</p>}</section>
     </main>
   );
 }

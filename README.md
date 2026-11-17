@@ -70,7 +70,7 @@ Only the Supabase publishable key belongs in browser-accessible environment vari
 - The live Supabase project has the Project Management schema, RLS, private Storage, and policy hardening applied. See [the project implementation specification](docs/PROJECT_MANAGEMENT_SPEC.md).
 - Six legacy migration files are still missing from the repository; see [migration recovery notes](docs/LEGACY_MIGRATION_RECOVERY.md). This is a fresh-install reproducibility gap, not a missing schema on the live project.
 - Cross-customer isolation tests still require controlled test identities in a non-production environment.
-- Run `npm run typecheck`, `npm run lint`, and `npm run build` locally before release.
+- Install exact dependencies with `npm ci`, then run `npm run typecheck`, `npm run lint`, and `npm run build` locally before release.
 
 
 ## First administrator setup

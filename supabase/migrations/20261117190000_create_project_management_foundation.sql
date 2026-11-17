@@ -119,6 +119,62 @@ create index if not exists project_tasks_assignee_idx on public.project_tasks(as
 create index if not exists project_updates_project_created_idx on public.project_updates(project_id, created_at desc);
 create index if not exists project_files_project_created_idx on public.project_files(project_id, created_at desc);
 
+-- Keep task ownership and customer visibility under administrator control.
+create or replace function private.guard_project_task_update()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $
+begin
+  if not private.is_admin() and (
+    new.project_id is distinct from old.project_id
+    or new.assigned_to is distinct from old.assigned_to
+    or new.customer_visible is distinct from old.customer_visible
+    or new.created_by is distinct from old.created_by
+  ) then
+    raise exception 'Only an administrator can change task ownership or customer visibility';
+  end if;
+
+  if new.stage_id is not null and not exists (
+    select 1 from public.project_stages s
+    where s.id = new.stage_id and s.project_id = new.project_id
+  ) then
+    raise exception 'Task stage must belong to the same project';
+  end if;
+
+  return new;
+end;
+$;
+
+create or replace function private.validate_project_task_stage()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $
+begin
+  if new.stage_id is not null and not exists (
+    select 1 from public.project_stages s
+    where s.id = new.stage_id and s.project_id = new.project_id
+  ) then
+    raise exception 'Task stage must belong to the same project';
+  end if;
+  return new;
+end;
+$;
+
+revoke all on function private.guard_project_task_update() from public, anon;
+revoke all on function private.validate_project_task_stage() from public, anon;
+
+create trigger project_tasks_guard_update
+before update on public.project_tasks
+for each row execute function private.guard_project_task_update();
+
+create trigger project_tasks_validate_stage
+before insert or update of project_id, stage_id on public.project_tasks
+for each row execute function private.validate_project_task_stage();
+
 -- SECURITY DEFINER helpers are isolated in the existing private schema.
 create or replace function private.can_access_project(target_project_id uuid)
 returns boolean
@@ -232,7 +288,7 @@ with check (private.is_admin());
 
 create policy project_team_read_project_members on public.project_team
 for select to authenticated
-using (private.is_admin() or user_id = auth.uid() or private.can_access_project(project_id));
+using (private.is_admin() or user_id = auth.uid() or private.is_assigned_project_staff(project_id));
 
 create policy project_team_admin_all on public.project_team
 for all to authenticated

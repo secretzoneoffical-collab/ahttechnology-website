@@ -1,34 +1,12 @@
 const services = [
-  {
-    number: "01",
-    title: "Business Systems Audit",
-    description: "Understand how your business works, identify gaps, and build a clear improvement plan."
-  },
-  {
-    number: "02",
-    title: "POS & ERP Solutions",
-    description: "Set up, optimize, and connect the systems that support your daily business operations."
-  },
-  {
-    number: "03",
-    title: "Systems Integration",
-    description: "Bring disconnected tools and data together into a more consistent workflow."
-  },
-  {
-    number: "04",
-    title: "Business Automation",
-    description: "Reduce repetitive work with carefully selected, maintainable automation."
-  },
-  {
-    number: "05",
-    title: "Inventory & Operations",
-    description: "Improve stock visibility, purchasing processes, and operational control."
-  },
-  {
-    number: "06",
-    title: "IT & Technical Solutions",
-    description: "Practical support for devices, networks, servers, backups, and business technology."
-  }
+  { number: "01", title: "Business Systems Audit", description: "Review workflows, identify gaps, and build a practical improvement plan." },
+  { number: "02", title: "POS / ERP Setup & Optimization", description: "Configure and improve the systems that support your daily business operations." },
+  { number: "03", title: "Systems Integration", description: "Connect business tools and organize the flow of information." },
+  { number: "04", title: "Business Automation", description: "Reduce repetitive tasks with suitable, maintainable automation." },
+  { number: "05", title: "Inventory & Operations Management", description: "Improve stock visibility, purchasing routines, and operational control." },
+  { number: "06", title: "IT Operations & Technical Solutions", description: "Support devices, servers, file sharing, user accounts, and backups." },
+  { number: "07", title: "Technical Support & Troubleshooting", description: "Diagnose technical issues and help keep essential systems running." },
+  { number: "08", title: "Networking & CCTV Solutions", description: "Plan and support business networks and surveillance systems." }
 ];
 
 export default function HomePage() {
@@ -41,12 +19,12 @@ export default function HomePage() {
             <span>ALI HANY TECHNOLOGY</span>
           </a>
           <nav className="nav-links" aria-label="Main navigation">
-            <a href="#services">Services</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
+            <a href="/services">Services</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
             <a href="#arabic" lang="ar" dir="rtl">العربية</a>
           </nav>
-          <div className="hero-actions" style={{ marginTop: 0 }}><a className="button-secondary" href="/login">Client Portal</a><a className="nav-cta" href="#contact">Let’s Talk <span aria-hidden="true">↗</span></a></div>
+          <div className="hero-actions" style={{ marginTop: 0 }}><a className="button-secondary" href="/login">Client Portal</a><a className="nav-cta" href="/contact">Let’s Talk <span aria-hidden="true">↗</span></a></div>
         </div>
       </header>
 
@@ -60,8 +38,8 @@ export default function HomePage() {
               turning everyday challenges into practical technology solutions.
             </p>
             <div className="hero-actions">
-              <a className="button-primary" href="#contact">Discuss your project <span aria-hidden="true">↗</span></a>
-              <a className="button-secondary" href="#services">Explore services</a>
+              <a className="button-primary" href="/contact">Discuss your project <span aria-hidden="true">↗</span></a>
+              <a className="button-secondary" href="/services">Explore services</a>
             </div>
           </div>
 
@@ -137,11 +115,13 @@ export default function HomePage() {
           </div>
           <div className="service-grid">
             <article className="service-card"><span className="service-number">01 / AHT</span><h3>مراجعة أنظمة الأعمال</h3><p>فهم طريقة الشغل الحالية وتحديد المشاكل وفرص التحسين.</p></article>
-            <article className="service-card"><span className="service-number">02 / AHT</span><h3>أنظمة POS و ERP</h3><p>تجهيز وتطوير أنظمة البيع والحسابات وإدارة العمليات.</p></article>
+            <article className="service-card"><span className="service-number">02 / AHT</span><h3>تجهيز وتطوير POS و ERP</h3><p>تجهيز وتطوير أنظمة البيع والإدارة والحسابات.</p></article>
             <article className="service-card"><span className="service-number">03 / AHT</span><h3>ربط الأنظمة</h3><p>تنظيم تدفق البيانات وربط الأدوات والأنظمة المختلفة.</p></article>
-            <article className="service-card"><span className="service-number">04 / AHT</span><h3>أتمتة الأعمال</h3><p>تقليل المهام المتكررة بأدوات أتمتة مناسبة وقابلة للصيانة.</p></article>
-            <article className="service-card"><span className="service-number">05 / AHT</span><h3>المخزون والتشغيل</h3><p>تحسين متابعة المخزون والمشتريات وتنظيم العمليات اليومية.</p></article>
-            <article className="service-card"><span className="service-number">06 / AHT</span><h3>حلول IT والدعم الفني</h3><p>دعم الأجهزة والشبكات والسيرفرات والنسخ الاحتياطي.</p></article>
+            <article className="service-card"><span className="service-number">04 / AHT</span><h3>أتمتة الأعمال</h3><p>تقليل المهام المتكررة بأدوات أتمتة مناسبة.</p></article>
+            <article className="service-card"><span className="service-number">05 / AHT</span><h3>إدارة المخزون والتشغيل</h3><p>تحسين متابعة المخزون والمشتريات والعمليات اليومية.</p></article>
+            <article className="service-card"><span className="service-number">06 / AHT</span><h3>تشغيل IT والحلول التقنية</h3><p>دعم الأجهزة والسيرفرات والمستخدمين والنسخ الاحتياطي.</p></article>
+            <article className="service-card"><span className="service-number">07 / AHT</span><h3>الدعم الفني وحل المشكلات</h3><p>تشخيص الأعطال ومعالجتها لضمان استمرارية التشغيل.</p></article>
+            <article className="service-card"><span className="service-number">08 / AHT</span><h3>الشبكات وأنظمة المراقبة</h3><p>حلول الشبكات وكاميرات المراقبة والبنية التقنية.</p></article>
           </div>
         </div>
       </section>

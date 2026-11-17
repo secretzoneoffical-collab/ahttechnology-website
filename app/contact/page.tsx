@@ -1,3 +1,4 @@
+import Link from "next/link";
 import ContactRequestForm from "./contact-request-form";
 
 export default function ContactPage() {
@@ -5,9 +6,9 @@ export default function ContactPage() {
     <main>
       <header className="site-header">
         <div className="container nav">
-          <a className="brand" href="/"><span className="brand-mark">AHT</span><span>ALI HANY TECHNOLOGY</span></a>
+          <Link className="brand" href="/"><span className="brand-mark">AHT</span><span>ALI HANY TECHNOLOGY</span></Link>
           <nav className="nav-links" aria-label="Main navigation">
-            <a href="/services">Services</a><a href="/about">About</a><a href="/">Home</a>
+            <Link href="/services">Services</Link><Link href="/about">About</Link><Link href="/">Home</Link>
           </nav>
           <a className="nav-cta" href="https://bit.ly/m/AliHanySys" target="_blank" rel="noreferrer">WhatsApp ↗</a>
         </div>

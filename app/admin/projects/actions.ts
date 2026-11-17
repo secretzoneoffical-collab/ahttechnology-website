@@ -79,3 +79,39 @@ export async function createProjectUpdate(formData: FormData) {
   revalidatePath("/admin/projects/" + projectId);
   revalidatePath("/dashboard");
 }
+
+
+export async function createProjectStage(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const projectId = requiredText(formData.get("project_id"), 64);
+  const name = requiredText(formData.get("name"), 160);
+  const description = String(formData.get("description") ?? "").trim().slice(0, 2000);
+  const sortOrder = Math.max(0, Math.min(10000, Number(formData.get("sort_order") ?? 0) || 0));
+  const customerVisible = formData.get("customer_visible") === "on";
+  const { error } = await supabase.from("project_stages").insert({
+    project_id: projectId, name, description: description || null,
+    sort_order: sortOrder, customer_visible: customerVisible
+  });
+  if (error) throw new Error("Unable to add project stage.");
+  revalidatePath("/admin/projects/" + projectId);
+  revalidatePath("/dashboard");
+}
+
+export async function updateProjectProgress(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const projectId = requiredText(formData.get("project_id"), 64);
+  const status = String(formData.get("status") ?? "");
+  const progress = Number(formData.get("progress_percent"));
+  if (!["planned","active","on_hold","completed","cancelled"].includes(status) || !Number.isInteger(progress) || progress < 0 || progress > 100) {
+    throw new Error("Invalid project status or progress.");
+  }
+  const { error } = await supabase.from("projects").update({
+    status, progress_percent: progress,
+    completed_at: status === "completed" ? new Date().toISOString() : null,
+    updated_at: new Date().toISOString()
+  }).eq("id", projectId);
+  if (error) throw new Error("Unable to update project progress.");
+  revalidatePath("/admin/projects");
+  revalidatePath("/admin/projects/" + projectId);
+  revalidatePath("/dashboard");
+}

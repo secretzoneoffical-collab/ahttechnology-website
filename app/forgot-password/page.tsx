@@ -7,6 +7,8 @@ import LanguageSwitcher from "@/components/language-switcher";
 import { useSiteLanguage } from "@/components/language-provider";
 
 export default function ForgotPasswordPage() {
+  const { language } = useSiteLanguage();
+  const isArabic = language === "ar";
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");

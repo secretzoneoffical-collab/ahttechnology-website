@@ -16,6 +16,7 @@ export default async function AdminLayout({
         <nav className="admin-nav" aria-label="قائمة الإدارة">
           <Link href="/admin">نظرة عامة</Link>
           <Link href="/admin/users">المستخدمون</Link>
+          <Link href="/admin/requests">طلبات الخدمات</Link>
           <Link href="/dashboard">بوابة العميل</Link>
           <Link href="/">الموقع الرئيسي</Link>
         </nav>

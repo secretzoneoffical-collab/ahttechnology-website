@@ -5,15 +5,15 @@ import { createClient } from "@/lib/supabase/client";
 import { useSiteLanguage } from "@/components/language-provider";
 
 const serviceOptions = [
-  "مراجعة أنظمة الأعمال",
-  "تجهيز وتطوير POS و ERP",
-  "ربط الأنظمة",
-  "أتمتة الأعمال",
-  "إدارة المخزون والتشغيل",
-  "تشغيل IT والحلول التقنية",
-  "الدعم الفني وحل المشكلات",
-  "الشبكات وأنظمة المراقبة",
-  "أخرى"
+  "Business Systems Audit",
+  "POS / ERP Setup & Optimization",
+  "Systems Integration",
+  "Business Automation",
+  "Inventory & Operations Management",
+  "IT Operations & Technical Solutions",
+  "Technical Support & Troubleshooting",
+  "Networking & CCTV Solutions",
+  "Other"
 ];
 
 export default function ContactRequestForm() {
@@ -69,7 +69,7 @@ export default function ContactRequestForm() {
       <label htmlFor="request-service">{isArabic ? "الخدمة المطلوبة *" : "Service required *"}</label>
       <select id="request-service" name="service_type" required defaultValue="">
         <option value="" disabled>{isArabic ? "اختر الخدمة" : "Select a service"}</option>
-        {serviceOptions.map((service) => <option key={service} value={service}>{isArabic ? service : ({ "مراجعة أنظمة الأعمال": "Business Systems Audit", "تجهيز وتطوير POS و ERP": "POS / ERP Setup & Optimization", "ربط الأنظمة": "Systems Integration", "أتمتة الأعمال": "Business Automation", "إدارة المخزون والتشغيل": "Inventory & Operations Management", "تشغيل IT والحلول التقنية": "IT Operations & Technical Solutions", "الدعم الفني وحل المشكلات": "Technical Support & Troubleshooting", "الشبكات وأنظمة المراقبة": "Networking & CCTV Solutions", "أخرى": "Other" } as Record<string, string>)[service] || service}</option>)}
+        {serviceOptions.map((service) => <option key={service} value={service}>{isArabic ? ({ "Business Systems Audit": "مراجعة أنظمة الأعمال", "POS / ERP Setup & Optimization": "تجهيز وتطوير POS و ERP", "Systems Integration": "ربط الأنظمة", "Business Automation": "أتمتة الأعمال", "Inventory & Operations Management": "إدارة المخزون والتشغيل", "IT Operations & Technical Solutions": "تشغيل IT والحلول التقنية", "Technical Support & Troubleshooting": "الدعم الفني وحل المشكلات", "Networking & CCTV Solutions": "الشبكات وأنظمة المراقبة", "Other": "أخرى" } as Record<string, string>)[service] : service}</option>)}
       </select>
       <label htmlFor="request-message">{isArabic ? "اشرح لنا احتياجك *" : "Tell us what you need *"}</label>
       <textarea id="request-message" name="message" rows={5} minLength={10} maxLength={3000} required />

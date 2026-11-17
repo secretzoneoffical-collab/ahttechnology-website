@@ -157,13 +157,14 @@ After creating a controlled test account and confirming the intended signup poli
 
 ## Follow-up: Project Portal applied to live Supabase (2026-11-17)
 
-The five project-portal migrations have since been applied successfully to the live Supabase project. Current ledger entries now include:
+The six project-portal migrations have since been applied successfully to the live Supabase project. Current ledger entries now include:
 
 - `20261117163107_create_project_management_foundation`
 - `20261117163111_private_project_file_storage`
 - `20261117163133_project_portal_policy_performance`
 - `20261117163157_admin_only_project_storage_uploads`
 - `20261117164416_validate_project_memberships`
+- `20261117164631_restrict_staff_task_edits`
 
 The following seven tables are now present in `public`, all with RLS enabled:
 `customer_users`, `projects`, `project_team`, `project_stages`, `project_tasks`, `project_updates`, and `project_files`.
@@ -171,7 +172,7 @@ The following seven tables are now present in `public`, all with RLS enabled:
 The private Storage bucket `aht-project-files` is present with a 15 MiB file limit and an allowlist for PDF, JPEG, PNG, WebP, TXT, DOCX, and XLSX. The bucket is not public. Object writes and deletes are restricted to active admins. Reads require a matching project-file metadata row and project-level authorization.
 
 Additional authorization hardening:
-- Staff can read only projects assigned to them.
+- Staff can read only projects assigned to them and may update only task status/completion fields on tasks assigned to their own account.
 - Database triggers enforce active customer and staff membership, ensure task assignees belong to the project team, and clear task assignments when a team member is removed.
 - Staff task updates are restricted to tasks assigned to their own user ID.
 - Database triggers prevent staff from changing task project ownership, assignee, customer visibility, or creator, and prevent a task from referencing a stage belonging to another project.

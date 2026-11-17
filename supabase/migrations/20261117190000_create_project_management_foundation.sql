@@ -328,8 +328,8 @@ with check (
 
 create policy project_tasks_staff_update on public.project_tasks
 for update to authenticated
-using (private.is_admin() or private.is_assigned_project_staff(project_id))
-with check (private.is_admin() or private.is_assigned_project_staff(project_id));
+using (private.is_admin() or (private.is_assigned_project_staff(project_id) and assigned_to = auth.uid()))
+with check (private.is_admin() or (private.is_assigned_project_staff(project_id) and assigned_to = auth.uid()));
 
 create policy project_tasks_admin_delete on public.project_tasks
 for delete to authenticated

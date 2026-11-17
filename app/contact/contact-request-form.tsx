@@ -1,0 +1,81 @@
+"use client";
+
+import { FormEvent, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+
+const serviceOptions = [
+  "Business Systems Audit",
+  "POS / ERP Setup & Optimization",
+  "Systems Integration",
+  "Business Automation",
+  "Inventory & Operations Management",
+  "IT Operations & Technical Solutions",
+  "Technical Support & Troubleshooting",
+  "Networking & CCTV Solutions",
+  "Other"
+];
+
+export default function ContactRequestForm() {
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [error, setError] = useState("");
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setStatus("sending");
+    setError("");
+
+    const form = event.currentTarget;
+    const values = new FormData(form);
+    const payload = {
+      full_name: String(values.get("full_name") ?? "").trim(),
+      email: String(values.get("email") ?? "").trim(),
+      phone: String(values.get("phone") ?? "").trim(),
+      company: String(values.get("company") ?? "").trim() || null,
+      service_type: String(values.get("service_type") ?? ""),
+      message: String(values.get("message") ?? "").trim()
+    };
+
+    if (payload.full_name.length < 2 || payload.phone.length < 7 || payload.message.length < 10) {
+      setError("راجع البيانات: الاسم ورقم الهاتف والرسالة مطلوبين، والرسالة 10 أحرف على الأقل.");
+      setStatus("error");
+      return;
+    }
+
+    try {
+      const supabase = createClient();
+      const { error: insertError } = await supabase.from("service_requests").insert(payload);
+      if (insertError) throw insertError;
+      form.reset();
+      setStatus("success");
+    } catch {
+      setError("حصلت مشكلة أثناء إرسال الطلب. حاول مرة تانية أو تواصل معنا عبر واتساب.");
+      setStatus("error");
+    }
+  }
+
+  return (
+    <form className="auth-form contact-request-form" onSubmit={handleSubmit}>
+      <label htmlFor="request-name">الاسم بالكامل *</label>
+      <input id="request-name" name="full_name" autoComplete="name" minLength={2} maxLength={120} required />
+      <label htmlFor="request-email">البريد الإلكتروني *</label>
+      <input id="request-email" name="email" type="email" autoComplete="email" maxLength={254} required />
+      <label htmlFor="request-phone">رقم الهاتف / واتساب *</label>
+      <input id="request-phone" name="phone" type="tel" autoComplete="tel" minLength={7} maxLength={30} required />
+      <label htmlFor="request-company">اسم الشركة (اختياري)</label>
+      <input id="request-company" name="company" autoComplete="organization" maxLength={160} />
+      <label htmlFor="request-service">الخدمة المطلوبة *</label>
+      <select id="request-service" name="service_type" required defaultValue="">
+        <option value="" disabled>اختر الخدمة</option>
+        {serviceOptions.map((service) => <option key={service} value={service}>{service}</option>)}
+      </select>
+      <label htmlFor="request-message">اشرح لنا احتياجك *</label>
+      <textarea id="request-message" name="message" rows={5} minLength={10} maxLength={3000} required />
+      {status === "success" && <p className="auth-success" role="status">وصلنا طلبك بنجاح. فريق AHT هيراجعه ويتواصل معاك.</p>}
+      {status === "error" && <p className="auth-error" role="alert">{error}</p>}
+      <button className="button-primary auth-submit" type="submit" disabled={status === "sending"}>
+        {status === "sending" ? "جارٍ إرسال الطلب..." : "إرسال طلب الخدمة"}
+      </button>
+      <p className="auth-muted">إرسال الطلب لا يعني قبول عرض أو تحديد سعر؛ هنراجع التفاصيل ونتواصل معاك.</p>
+    </form>
+  );
+}

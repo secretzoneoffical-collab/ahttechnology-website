@@ -19,6 +19,7 @@ export default async function AdminLayout({
           <Link href="/admin/team">فريق العمل</Link>
           <Link href="/admin/requests">طلبات الخدمات</Link>
           <Link href="/admin/customers">إدارة العملاء</Link>
+          <Link href="/admin/projects">إدارة المشاريع</Link>
           <Link href="/dashboard">بوابة العميل</Link>
           <Link href="/">الموقع الرئيسي</Link>
         </nav>

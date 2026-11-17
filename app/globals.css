@@ -380,3 +380,5 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .signup-role-option strong { color:#edf5fc; font-size:13px; }
 .signup-role-option small { color:var(--muted); font-size:11px; line-height:1.6; }
 .signup-footnote { margin-top:16px; font-size:11px; }
+
+.admin-status.pending { color:#f3ce82; background:rgba(243,186,80,.1); }

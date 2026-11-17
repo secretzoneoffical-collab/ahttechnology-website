@@ -19,6 +19,7 @@
 | 20261117163111 | private_project_file_storage | `supabase/migrations/20261117163111_private_project_file_storage.sql` |
 | 20261117163133 | project_portal_policy_performance | `supabase/migrations/20261117163133_project_portal_policy_performance.sql` |
 | 20261117163157 | admin_only_project_storage_uploads | `supabase/migrations/20261117163157_admin_only_project_storage_uploads.sql` |
+| 20261117164416 | validate_project_memberships | `supabase/migrations/20261117164416_validate_project_memberships.sql` |
 
 The first six versions were already applied before the project portal work but their SQL files are absent from the repository. Their exact historical SQL must not be invented from migration names. The first core tables and some functions also predate the tracked migration history, so the ledger alone is not a fresh-database bootstrap.
 

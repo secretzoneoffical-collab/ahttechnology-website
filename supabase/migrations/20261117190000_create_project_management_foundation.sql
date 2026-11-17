@@ -125,7 +125,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path = ''
-as $
+as $guard$
 begin
   if not private.is_admin() and (
     new.project_id is distinct from old.project_id
@@ -142,17 +142,16 @@ begin
   ) then
     raise exception 'Task stage must belong to the same project';
   end if;
-
   return new;
 end;
-$;
+$guard$;
 
 create or replace function private.validate_project_task_stage()
 returns trigger
 language plpgsql
 security definer
 set search_path = ''
-as $
+as $validate$
 begin
   if new.stage_id is not null and not exists (
     select 1 from public.project_stages s
@@ -162,7 +161,7 @@ begin
   end if;
   return new;
 end;
-$;
+$validate$;
 
 revoke all on function private.guard_project_task_update() from public, anon;
 revoke all on function private.validate_project_task_stage() from public, anon;

@@ -41,6 +41,7 @@ Only the Supabase publishable key belongs in browser-accessible environment vari
 - Public service inquiry form connected to Supabase PostgreSQL
 - Admin-only service request inbox at `/admin/requests` with status updates, internal notes, and last-contact timestamps
 - CRM customer directory at `/admin/customers`, customer profiles, lead conversion from service requests, customer status, internal notes, and linked request history
+- Staff directory at `/admin/team` and admin-only role/status management for existing accounts at `/admin/users`; Admin accounts cannot be changed through the UI
 - Responsive AHT design foundation
 - Supabase browser and server clients
 - Session refresh through the Next.js root proxy

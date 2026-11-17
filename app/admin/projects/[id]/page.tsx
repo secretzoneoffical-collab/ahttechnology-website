@@ -1,18 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { createProjectTask, createProjectUpdate, createProjectStage, updateProjectProgress } from "../actions";
+import { createProjectTask, createProjectUpdate, createProjectStage, updateProjectProgress, assignProjectStaff, removeProjectStaff } from "../actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { supabase } = await requireAdmin();
-  const [{ data: project, error }, { data: tasks }, { data: updates }, { data: stages }] = await Promise.all([
+  const [{ data: project, error }, { data: tasks }, { data: updates }, { data: stages }, { data: team }, { data: staffOptions }] = await Promise.all([
     supabase.from("projects").select("id, project_code, name, description, status, progress_percent, start_date, due_date, customers(full_name, company_name)").eq("id", id).maybeSingle(),
     supabase.from("project_tasks").select("id, title, description, status, priority, due_date, customer_visible").eq("project_id", id).order("created_at", { ascending: false }),
     supabase.from("project_updates").select("id, title, body, customer_visible, created_at").eq("project_id", id).order("created_at", { ascending: false }),
-    supabase.from("project_stages").select("id, name, status, progress_percent, sort_order").eq("project_id", id).order("sort_order")
+    supabase.from("project_stages").select("id, name, status, progress_percent, sort_order").eq("project_id", id).order("sort_order"),\n    supabase.from("project_team").select("user_id").eq("project_id", id),\n    supabase.from("profiles").select("id, full_name").eq("role", "staff").eq("status", "active").order("full_name")
   ]);
   if (error || !project) notFound();
   const customer = Array.isArray(project.customers) ? project.customers[0] : project.customers;
@@ -25,7 +25,7 @@ export default async function AdminProjectDetailPage({ params }: { params: Promi
         <p>{project.description || "لا يوجد وصف للمشروع."}</p>
         <div className="project-meta"><span>الحالة: {project.status}</span><span>البداية: {project.start_date || "—"}</span><span>التسليم: {project.due_date || "—"}</span></div>
       </section>
-      <div className="project-detail-columns">
+      <section className="admin-panel project-team-panel"><div className="admin-panel-heading"><h2>فريق المشروع</h2><p>إسناد المشروع إلى الموظفين النشطين.</p></div><form action={assignProjectStaff} className="project-create-form project-team-form"><input type="hidden" name="project_id" value={id}/><label>اختيار موظف<select name="user_id" required defaultValue=""><option value="" disabled>اختر موظفًا</option>{staffOptions?.filter(s=>!team?.some(t=>t.user_id===s.id)).map(s=><option key={s.id} value={s.id}>{s.full_name || s.id}</option>)}</select></label><button className="button-primary" type="submit">إسناد للمشروع</button></form><div className="project-team-list">{team?.map(member=><div key={member.user_id}><span>{staffOptions?.find(s=>s.id===member.user_id)?.full_name || member.user_id}</span><form action={removeProjectStaff}><input type="hidden" name="project_id" value={id}/><input type="hidden" name="user_id" value={member.user_id}/><button className="admin-text-button" type="submit">إزالة</button></form></div>)}</div></section>\n      <div className="project-detail-columns">
         <section className="admin-panel">
           <div className="admin-panel-heading"><h2>المهام</h2><p>أضف المهام وحدد ما يمكن للعميل رؤيته.</p></div>
           <form action={createProjectTask} className="project-create-form">

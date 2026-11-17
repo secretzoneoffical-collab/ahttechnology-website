@@ -22,24 +22,42 @@ function LoginForm() {
     setError("");
     setLoading(true);
 
-    const supabase = createClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password
-    });
+    let timeoutId: number | undefined;
+    try {
+      const supabase = createClient();
+      const signInPromise = supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password
+      });
+      const { error: signInError } = await Promise.race([
+        signInPromise,
+        new Promise<never>((_, reject) => {
+          timeoutId = window.setTimeout(() => reject(new Error("LOGIN_TIMEOUT")), 20000);
+        })
+      ]);
 
-    setLoading(false);
-    if (signInError) {
-      setError(isArabic ? "تعذر تسجيل الدخول. راجع البريد الإلكتروني وكلمة المرور." : "Unable to sign in. Check your email and password.");
-      return;
+      if (signInError) {
+        setError(isArabic ? "تعذر تسجيل الدخول. راجع البريد الإلكتروني وكلمة المرور، أو حاول مرة أخرى." : "Unable to sign in. Check your email and password, or try again.");
+        return;
+      }
+
+      const requestedNext = searchParams.get("next") || "/dashboard";
+      const safeNext = requestedNext.startsWith("/") && !requestedNext.startsWith("//") && !requestedNext.includes("\\")
+        ? requestedNext
+        : "/dashboard";
+      router.replace(safeNext);
+      router.refresh();
+    } catch (error) {
+      const timedOut = error instanceof Error && error.message === "LOGIN_TIMEOUT";
+      setError(
+        timedOut
+          ? (isArabic ? "الاتصال بخدمة تسجيل الدخول استغرق وقتًا طويلًا. تحقق من الاتصال وحاول مرة أخرى." : "The sign-in request timed out. Check your connection and try again.")
+          : (isArabic ? "حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى، وإذا استمرت المشكلة تواصل مع AHT." : "An unexpected sign-in error occurred. Please try again.")
+      );
+    } finally {
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+      setLoading(false);
     }
-
-    const requestedNext = searchParams.get("next") || "/dashboard";
-    const safeNext = requestedNext.startsWith("/") && !requestedNext.startsWith("//") && !requestedNext.includes("\\")
-      ? requestedNext
-      : "/dashboard";
-    router.replace(safeNext);
-    router.refresh();
   }
 
   return (

@@ -1,32 +1,37 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-export default async function CustomerProjectPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function DashboardPage() {
   const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getClaims();
-  if (!auth?.claims?.sub) redirect("/login?next=/dashboard");
-  const { data: profile } = await supabase.from("profiles").select("id, role, status").eq("id", auth.claims.sub).maybeSingle();
-  if (!profile || profile.status !== "active") redirect("/dashboard");
+  const { data, error } = await supabase.auth.getClaims();
+  if (error || !data?.claims?.sub) redirect("/login?next=/dashboard");
+  const { data: profile } = await supabase.from("profiles").select("id, full_name, role, status").eq("id", data.claims.sub).maybeSingle();
+  if (!profile) redirect("/login?message=account-unavailable");
+  if (profile.status !== "active") return <main className="auth-page" dir="rtl"><section className="auth-card"><h1>الحساب غير نشط</h1><p className="auth-muted">لا يمكن الوصول إلى بوابة AHT بهذا الحساب حاليًا. يرجى التواصل مع فريق AHT للمساعدة.</p></section></main>;
 
-  const { data: project } = await supabase.from("projects").select("id, project_code, name, description, status, progress_percent, start_date, due_date").eq("id", id).maybeSingle();
-  if (!project) notFound();
-  if (profile.role !== "admin") {
-    const { data: link } = await supabase.from("customer_users").select("customer_id").eq("user_id", profile.id).maybeSingle();
-    if (!link) notFound();
-    const { data: ownership } = await supabase.from("projects").select("id").eq("id", id).eq("customer_id", link.customer_id).maybeSingle();
-    if (!ownership) notFound();
+  let visibleProjects: {id:string;project_code:string;name:string;status:string;progress_percent:number;due_date:string|null}[] = [];
+  let loadError = false;
+  if (profile.role === "admin") {
+    const result = await supabase.from("projects").select("id, project_code, name, status, progress_percent, due_date").order("created_at", {ascending:false});
+    visibleProjects = result.data ?? []; loadError = !!result.error;
+  } else if (profile.role === "staff") {
+    const { data: assignments, error: assignmentError } = await supabase.from("project_team").select("project_id").eq("user_id", profile.id);
+    const ids = (assignments ?? []).map(a=>a.project_id);
+    if (ids.length) {
+      const result = await supabase.from("projects").select("id, project_code, name, status, progress_percent, due_date").in("id", ids).order("created_at", {ascending:false});
+      visibleProjects = result.data ?? []; loadError = !!result.error;
+    } else loadError = !!assignmentError;
+  } else {
+    const { data: links, error: linkError } = await supabase.from("customer_users").select("customer_id").eq("user_id", profile.id);
+    const customerIds = (links ?? []).map(link=>link.customer_id);
+    if (customerIds.length) {
+      const result = await supabase.from("projects").select("id, project_code, name, status, progress_percent, due_date").in("customer_id", customerIds).order("created_at", {ascending:false});
+      visibleProjects = result.data ?? []; loadError = !!result.error;
+    } else loadError = !!linkError;
   }
 
-  const [{ data: stages }, { data: tasks }, { data: updates }, { data: files }] = await Promise.all([
-    supabase.from("project_stages").select("id, name, status, progress_percent, sort_order").eq("project_id", id).eq("customer_visible", true).order("sort_order"),
-    supabase.from("project_tasks").select("id, title, status, due_date").eq("project_id", id).eq("customer_visible", true).order("created_at", {ascending:false}),
-    supabase.from("project_updates").select("id, title, body, created_at").eq("project_id", id).eq("customer_visible", true).order("created_at", {ascending:false}),
-    supabase.from("project_files").select("id, file_name, storage_path, created_at").eq("project_id", id).eq("customer_visible", true).order("created_at", {ascending:false})
-  ]);
-
-  return <main className="dashboard-page" dir="rtl"><header className="dashboard-header"><Link className="auth-brand" href="/">AHT <span>ALI HANY TECHNOLOGY</span></Link><Link className="button-secondary" href="/dashboard">العودة لمشاريعي</Link></header><section className="dashboard-content"><Link className="auth-link" href="/dashboard">← مشاريعي</Link><span className="eyebrow">PROJECT · {project.project_code}</span><h1>{project.name}</h1><p className="auth-muted">{project.description || "تفاصيل وتحديثات مشروعك مع AHT."}</p><div className="admin-panel project-summary"><div className="project-progress large"><span>{project.progress_percent}%</span><i><b style={{width:project.progress_percent+"%"}} /></i></div><div className="project-meta"><span>الحالة: {project.status}</span><span>البداية: {project.start_date || "—"}</span><span>التسليم: {project.due_date || "—"}</span></div></div><div className="project-detail-columns"><section className="admin-panel"><h2>مراحل المشروع</h2>{stages?.length ? <div className="project-record-list">{stages.map(s=><article key={s.id}><strong>{s.name}</strong><span>{s.status} · {s.progress_percent}%</span></article>)}</div> : <p className="admin-note">لم يتم نشر مراحل بعد.</p>}<h2>المهام الظاهرة لك</h2>{tasks?.length ? <div className="project-record-list">{tasks.map(t=><article key={t.id}><strong>{t.title}</strong><span>{t.status} · {t.due_date || "بدون موعد"}</span></article>)}</div> : <p className="admin-note">لا توجد مهام منشورة.</p>}</section><section className="admin-panel"><h2>تحديثات فريق AHT</h2>{updates?.length ? <div className="project-record-list">{updates.map(u=><article key={u.id}><strong>{u.title}</strong><span>{new Intl.DateTimeFormat("ar-EG",{dateStyle:"medium",timeStyle:"short"}).format(new Date(u.created_at))}</span><p>{u.body}</p></article>)}</div> : <p className="admin-note">لا توجد تحديثات منشورة.</p>}<h2>ملفات المشروع</h2>{files?.length ? <div className="project-record-list">{files.map(f=><article key={f.id}><strong>{f.file_name}</strong><span>مرفق مشروع — {new Intl.DateTimeFormat("ar-EG",{dateStyle:"medium"}).format(new Date(f.created_at))}</span></article>)}</div> : <p className="admin-note">لا توجد ملفات منشورة.</p>}</section></div></section></main>;
+  return <main className="dashboard-page" dir="rtl"><header className="dashboard-header"><Link className="auth-brand" href="/">AHT <span>ALI HANY TECHNOLOGY</span></Link><div className="dashboard-header-actions">{profile.role === "admin" && <Link className="button-primary" href="/admin">لوحة الإدارة</Link>}<form action="/auth/signout" method="post"><button className="button-secondary" type="submit">تسجيل الخروج</button></form></div></header><section className="dashboard-content"><span className="eyebrow">AHT {profile.role === "staff" ? "TEAM WORKSPACE" : "CUSTOMER PORTAL"}</span><h1>أهلاً {profile.full_name || "بك"} 👋</h1><p className="auth-muted">{profile.role === "admin" ? "أنت مسجل كمدير. تقدر تتابع كل المشاريع من لوحة الإدارة." : profile.role === "staff" ? "المشاريع المسندة إليك ومهام فريق العمل." : "دي مساحة متابعة مشاريعك وملفاتك وتحديثات فريق AHT."}</p><div className="portal-section-heading"><h2>{profile.role === "staff" ? "المشاريع المسندة إليّ" : "مشاريعي"}</h2><span>{visibleProjects.length} مشروع</span></div>{loadError ? <div className="dashboard-placeholder"><strong>تعذر تحميل المشاريع</strong><span>تأكد من تطبيق Migration الخاصة بإدارة المشاريع.</span></div> : !visibleProjects.length ? <div className="dashboard-placeholder"><strong>لا توجد مشاريع مرتبطة بحسابك حتى الآن</strong><span>عند ربط حسابك بملف العميل أو إسناد مشروع إليك، سيظهر هنا.</span></div> : <div className="portal-project-grid">{visibleProjects.map(p=><article key={p.id} className="portal-project-card"><div><span className="portal-project-code">{p.project_code}</span><span className="portal-project-status">{p.status}</span></div><h3>{p.name}</h3><div className="project-progress"><span>{p.progress_percent}%</span><i><b style={{width:p.progress_percent+"%"}} /></i></div><small>موعد التسليم: {p.due_date || "غير محدد"}</small><Link href={"/dashboard/projects/"+p.id}>عرض تفاصيل المشروع ←</Link></article>)}</div>}</section></main>;
 }

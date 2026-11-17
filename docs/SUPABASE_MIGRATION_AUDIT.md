@@ -1,4 +1,6 @@
-# Supabase Migration & Schema Audit\n\n> **Historical snapshot note:** Sections below document the initial audit before Project Management was added. See the follow-up at the end for the current live schema and migration state.
+# Supabase Migration & Schema Audit
+
+> **Historical snapshot note:** Sections below document the initial audit before Project Management was added. See the follow-up at the end for the current live schema and migration state.
 
 **Project:** `mdvxbvaasspxqusrvfiq`  
 **Repository branch checked:** `main`  

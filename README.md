@@ -37,6 +37,9 @@ Only the Supabase publishable key belongs in browser-accessible environment vari
 ## Current implementation
 
 - Bilingual landing page content (English and Arabic)
+- Service catalogue covering AHT's eight approved service groups
+- Public service inquiry form connected to Supabase PostgreSQL
+- Admin-only service request inbox at `/admin/requests`
 - Responsive AHT design foundation
 - Supabase browser and server clients
 - Session refresh through the Next.js root proxy
@@ -48,7 +51,10 @@ Only the Supabase publishable key belongs in browser-accessible environment vari
 ## Important setup notes
 
 - The Supabase `public.profiles` table and its row-level security policies are provisioned in the connected project.
+- The Supabase `public.service_requests` table accepts only the contact fields needed for a new website inquiry; public reads are blocked, while active admins can review and update request status.
+- The service request table uses RLS, column-level insert grants, input length constraints, and admin-only read/update policies.
 - Configure the Supabase Auth Site URL and allowed redirect URLs for the eventual deployment origin before testing password recovery.
 - Public self-registration is intentionally not implemented.
 - No administrator account is created by this repository.
+- GitHub Actions runs ESLint, TypeScript, and production build checks on pushes and pull requests to `main`.
 - Run `npm run typecheck`, `npm run lint`, and `npm run build` locally before release.

@@ -20,12 +20,12 @@ export default async function DashboardPage() {
     redirect("/login?message=account-unavailable");
   }
 
-  if (profile.status === "suspended") {
+  if (profile.status !== "active") {
     return (
       <main className="auth-page" dir="rtl">
         <section className="auth-card">
-          <h1>الحساب موقوف</h1>
-          <p className="auth-muted">يرجى التواصل مع فريق AHT للمساعدة.</p>
+          <h1>الحساب غير نشط</h1>
+          <p className="auth-muted">لا يمكن الوصول إلى بوابة AHT بهذا الحساب حاليًا. يرجى التواصل مع فريق AHT للمساعدة.</p>
         </section>
       </main>
     );

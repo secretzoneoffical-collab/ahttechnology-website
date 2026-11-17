@@ -13,6 +13,7 @@ export default async function AdminTeamPage() {
     .limit(100);
 
   const activeCount = staff?.filter((member) => member.status === "active").length ?? 0;
+  const pendingCount = staff?.filter((member) => member.status === "pending").length ?? 0;
   const suspendedCount = staff?.filter((member) => member.status === "suspended").length ?? 0;
 
   return (
@@ -27,6 +28,7 @@ export default async function AdminTeamPage() {
       </div>
       <section className="admin-stats" aria-label="إحصائيات فريق العمل">
         <article className="admin-stat"><span>إجمالي الموظفين</span><strong>{staff?.length ?? 0}</strong></article>
+        <article className="admin-stat"><span>بانتظار الموافقة</span><strong>{pendingCount}</strong></article>
         <article className="admin-stat"><span>حسابات نشطة</span><strong>{activeCount}</strong></article>
         <article className="admin-stat"><span>حسابات موقوفة</span><strong>{suspendedCount}</strong></article>
       </section>
@@ -37,7 +39,7 @@ export default async function AdminTeamPage() {
         ) : !staff?.length ? (
           <div className="admin-empty">
             <strong>لم يتم تعيين موظفين بعد</strong>
-            <span>اختار حسابًا موجودًا من إدارة المستخدمين وغيّر دوره إلى «موظف».</span>
+            <span>طلبات انضمام الموظفين والحسابات الحالية تظهر في إدارة المستخدمين.</span>
             <Link className="button-primary" href="/admin/users">فتح إدارة المستخدمين</Link>
           </div>
         ) : (
@@ -48,7 +50,7 @@ export default async function AdminTeamPage() {
                 {staff.map((member) => (
                   <tr key={member.id}>
                     <td>{member.full_name || "بدون اسم"}</td>
-                    <td><span className={member.status === "active" ? "admin-status active" : "admin-status suspended"}>{member.status === "active" ? "نشط" : "موقوف"}</span></td>
+                    <td><span className={member.status === "active" ? "admin-status active" : "admin-status suspended"}>{member.status === "active" ? "نشط" : member.status === "pending" ? "بانتظار الموافقة" : "موقوف"}</span></td>
                     <td>{new Intl.DateTimeFormat("ar-EG", { dateStyle: "medium" }).format(new Date(member.created_at))}</td>
                     <td><Link className="auth-link" href="/admin/users">تعديل الصلاحيات</Link></td>
                   </tr>

@@ -11,6 +11,7 @@ const roleLabels: Record<string, string> = {
 };
 const statusLabels: Record<string, string> = {
   active: "نشط",
+  pending: "بانتظار الموافقة",
   suspended: "موقوف"
 };
 
@@ -33,7 +34,7 @@ export default async function AdminUsersPage({
         <div>
           <span className="eyebrow">USER & ACCESS MANAGEMENT</span>
           <h1>المستخدمون والصلاحيات</h1>
-          <p>إدارة وصول الحسابات الحالية وتحديد حسابات فريق العمل.</p>
+          <p>مراجعة طلبات الموظفين وإدارة وصول العملاء وفريق العمل.</p>
         </div>
         <div className="admin-heading-actions">
           <span className="admin-count">{profiles?.length ?? 0} حساب</span>
@@ -75,8 +76,9 @@ export default async function AdminUsersPage({
                             <option value="staff">موظف</option>
                           </select>
                           <select name="status" aria-label={`حالة ${item.full_name || "المستخدم"}`} defaultValue={item.status}>
-                            <option value="active">نشط</option>
-                            <option value="suspended">موقوف</option>
+                            <option value="pending" disabled={item.role !== "staff"}>بانتظار الموافقة</option>
+                            <option value="active">{item.role === "staff" && item.status === "pending" ? "موافقة وتفعيل" : "نشط"}</option>
+                            <option value="suspended">إيقاف</option>
                           </select>
                           <button type="submit" className="button-primary">حفظ</button>
                         </form>
@@ -89,7 +91,7 @@ export default async function AdminUsersPage({
           </div>
         )}
       </section>
-      <p className="admin-note">يمكن تعيين الحسابات الحالية كموظفين أو عملاء وإيقافها أو تفعيلها. لا يمكن إنشاء أو ترقية حساب Admin من هذه الصفحة، كما لا يمكن تعديل حساب الإدارة الحالي.</p>
+      <p className="admin-note">طلبات الموظفين الجديدة تظهر بحالة «بانتظار الموافقة». اختر «موافقة وتفعيل» للسماح للموظف بالدخول، أو «إيقاف» لرفض الوصول. حسابات Admin محمية ولا يمكن إنشاؤها أو ترقيتها من هذه الصفحة.</p>
     </main>
   );
 }

@@ -47,7 +47,10 @@ Only the Supabase publishable key belongs in browser-accessible environment vari
 - Session refresh through the Next.js root proxy
 - Email/password sign-in
 - Password recovery and update flow
-- Protected customer dashboard
+- Protected dashboard for Admin, Staff, and Customer roles
+- Admin project management: project creation, CRM customer linking, progress, stages, tasks, team assignment, updates, and private document uploads
+- Staff workspace: assigned projects, assigned-task status updates, and internal project notes
+- Customer project portal: customer-visible milestones, tasks, progress updates, and signed private-file downloads
 - Sign-out route
 
 ## Important setup notes
